@@ -1,13 +1,16 @@
-
-mod gui;
+mod app;
 mod learning_data;
 mod util;
 
-use iced::{Sandbox, Settings};
-
-fn main() -> iced::Result {
-    gui::LanguageLearningToolApp::run(Settings::default())
+fn main() {
+	app::run();
 }
+
+// use iced::{Sandbox, Settings};
+
+// fn main() -> iced::Result {
+//     gui::LanguageLearningToolApp::run(Settings::default())
+// }
 
 // fn main() {
 // 	let mut data = learning_data::LearningData::load();

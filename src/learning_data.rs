@@ -1,6 +1,6 @@
 use crate::util;
 
-use std::collections::{HashMap, BTreeMap};
+use std::{collections::{HashMap, BTreeMap}, io::Write};
 
 use rand::distributions::WeightedIndex;
 use rand::prelude::*;
@@ -14,9 +14,9 @@ const WORD_SAVE_FILE_NAME: &str = "save_data/words.tsv";
 const SENTENCE_SAVE_FILE_NAME: &str = "save_data/sentences";
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct LearningWord {
-	pub word: String,
-	pub weight: f64,
+struct LearningWord {
+	word: String,
+	weight: f64,
 }
 
 impl LearningWord {
@@ -28,13 +28,16 @@ impl LearningWord {
 	}
 }
 
-pub struct LearningWords(pub Vec<LearningWord>);
+struct LearningWords(Vec<LearningWord>);
 
 impl LearningWords {
 	fn load_from_save() -> Option<Self> {
+		eprint!("Loading word save file... ");
+		std::io::stderr().flush().unwrap();
 		if let Ok(mut reader) = csv::ReaderBuilder::new().delimiter(b'\t').from_path(WORD_SAVE_FILE_NAME) {
-			println!("Loaded word save file.");
-			Some(LearningWords(reader.deserialize::<LearningWord>().map(|result| result.expect("the save file should be properly formatted")).collect()))
+			let words = reader.deserialize::<LearningWord>().map(|result| result.expect("the save file should be properly formatted")).collect();
+			eprintln!("Done.");
+			Some(LearningWords(words))
 		}
 		else {
 			None
@@ -42,6 +45,9 @@ impl LearningWords {
 	}
 	
 	fn load_from_frequency_list() -> Self {
+		eprint!("Loading word frequency file... ");
+		std::io::stderr().flush().unwrap();
+		
 		let mut reader = csv::ReaderBuilder::new().delimiter(b' ')
 			.from_path(WORD_FREQUENCY_SOURCE_FILE_NAME).expect("the word frequency source file should exist");
 
@@ -51,12 +57,14 @@ impl LearningWords {
 
 		let the_rest = word_frequency_pairs.map(|(word, frequency)| LearningWord::from_frequency(word, frequency, max_frequency));
 		
-		println!("Loaded word frequency file.");
+		let words = std::iter::once(LearningWord::from_frequency(first_word, max_frequency, max_frequency)).chain(the_rest).collect();
+		
+		eprintln!("Done.");
 
-		LearningWords(std::iter::once(LearningWord::from_frequency(first_word, max_frequency, max_frequency)).chain(the_rest).collect())
+		LearningWords(words)
 	}
 
-	pub fn load() -> Self {
+	fn load() -> Self {
 		if let Some(result) = Self::load_from_save() {
 			result
 		}
@@ -67,7 +75,10 @@ impl LearningWords {
 		}
 	}
 
-	pub fn save(&self) {
+	fn save(&self) {
+		eprint!("Saving word file... ");
+		std::io::stderr().flush().unwrap();
+		
 		util::create_parent_directory_if_nonexistent(WORD_SAVE_FILE_NAME);
 		
 		let mut writer = csv::WriterBuilder::new().delimiter(b'\t')
@@ -75,14 +86,20 @@ impl LearningWords {
 		for row in &self.0 {
 			writer.serialize(row).unwrap();
 		}
+
+		eprintln!("Done.");
+	}
+
+	fn create_weighted_index(&self) -> WeightedIndex<f64> {
+		WeightedIndex::new(self.0.iter().map(|word| word.weight)).unwrap()
 	}
 }
 
 type SentenceId = u32;
 
-pub struct Translation {
-	pub id: SentenceId,
-	pub text: String,
+struct Translation {
+	id: SentenceId,
+	text: String,
 }
 
 impl PartialEq for Translation {
@@ -93,23 +110,22 @@ impl PartialEq for Translation {
 impl Eq for Translation {}
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct LearningSentence {
-	pub original: String,
-	pub translations: BTreeMap<SentenceId, String>,
-	pub weight: f64,
+struct LearningSentence {
+	original: String,
+	translations: BTreeMap<SentenceId, String>,
+	weight: f64,
 }
 
-impl LearningSentence {
-
-}
-
-pub struct LearningSentences(pub HashMap<SentenceId, LearningSentence>);
+struct LearningSentences(HashMap<SentenceId, LearningSentence>);
 
 impl LearningSentences {
 	fn load_from_save() -> Option<Self> {
+		eprint!("Loading sentence save file... ");
+		std::io::stderr().flush().unwrap();
+
 		if let Ok(file) = std::fs::File::open(SENTENCE_SAVE_FILE_NAME) {
 			if let Ok(map) = bincode::deserialize_from(file) {
-				println!("Loaded sentence save file.");
+				eprintln!("Done.");
 				return Some(LearningSentences(map));
 			}
 		}
@@ -117,6 +133,9 @@ impl LearningSentences {
 	}
 	
 	fn load_from_sentence_pair_source_file() -> Self {
+		eprint!("Loading sentence pair source file... ");
+		std::io::stderr().flush().unwrap();
+
 		#[derive(Debug, Deserialize)]
 		struct SentencePair {
 			id_0: SentenceId,
@@ -146,12 +165,12 @@ impl LearningSentences {
 			}
 		}
 
-		println!("Loaded sentence pair file.");
+		eprintln!("Done.");
 
 		result
 	}
 	
-	pub fn load() -> Self {
+	fn load() -> Self {
 		if let Some(result) = Self::load_from_save() {
 			result
 		}
@@ -162,30 +181,38 @@ impl LearningSentences {
 		}
 	}
 
-	pub fn save(&self) {
+	fn save(&self) {
+		eprint!("Saving sentence file... ");
+		std::io::stderr().flush().unwrap();
+		
 		util::create_parent_directory_if_nonexistent(SENTENCE_SAVE_FILE_NAME);
 		let file = std::fs::File::create(SENTENCE_SAVE_FILE_NAME).unwrap();
 		bincode::serialize_into(file, &self.0).unwrap();
+
+		eprintln!("Done.");
 	}
 }
 
 pub struct LearningData {
-	pub words: LearningWords,
-	pub sentences: LearningSentences,
+	words: LearningWords,
+	sentences: LearningSentences,
 	word_weighted_index: WeightedIndex<f64>,
-	random: ThreadRng,
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct LearningTask {
 	pub word_index: usize,
 	pub sentence_id: SentenceId,
-	pub word_position: usize,
+	pub word: String,
+	pub word_pos: usize,
+	pub sentence: String,
+	pub translations: Vec<String>,
 }
 
 impl LearningData {
 	pub fn next_task(&mut self) -> LearningTask {
 		loop {
-			let word_index = self.word_weighted_index.sample(&mut self.random);
+			let word_index = self.word_weighted_index.sample(&mut thread_rng());
 
 			let matching_sentences: Vec<_> = self.sentences.0.iter()
 				.filter(|(_id, sentence)| util::contains_word(&sentence.original, &self.words.0[word_index].word))
@@ -202,24 +229,30 @@ impl LearningData {
 			let sentence_weighted_index = WeightedIndex::new(
 				matching_sentences.iter().map(|(_id, sentence)| sentence.weight * word.weight)
 			).unwrap();
-			let (sentence_id, sentence) = matching_sentences[sentence_weighted_index.sample(&mut self.random)];
+			let (sentence_id, sentence) = matching_sentences[sentence_weighted_index.sample(&mut thread_rng())];
 
 			return LearningTask {
 				word_index,
 				sentence_id: *sentence_id,
-				word_position: util::find_word_position(&sentence.original, &word.word).expect("the word should exist in the chosen sentence"),
+				word: word.word.clone(),
+				word_pos: util::find_word_position(&sentence.original, &word.word).expect("the word should exist in the chosen sentence"),
+				sentence: sentence.original.clone(),
+				translations: sentence.translations.iter().map(|(_id, sentence)| sentence.clone()).collect(),
 			}
 		}
+	}
+
+	pub fn fail_task(&mut self, word_index: usize, sentence_id: SentenceId) {
+
 	}
 	
 	pub fn load() -> Self {
 		let words = LearningWords::load();
-		let word_weighted_index = WeightedIndex::new(words.0.iter().map(|word| word.weight)).unwrap();
+		let word_weighted_index = words.create_weighted_index();
 		LearningData { 
 			words, 
 			sentences: LearningSentences::load(), 
 			word_weighted_index,
-			random: thread_rng()
 		}
 	}
 }
