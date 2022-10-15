@@ -95,19 +95,7 @@ impl LearningWords {
 	}
 }
 
-type SentenceId = u32;
-
-struct Translation {
-	id: SentenceId,
-	text: String,
-}
-
-impl PartialEq for Translation {
-	fn eq(&self, other: &Self) -> bool {
-		self.id == other.id
-	}
-}
-impl Eq for Translation {}
+pub type SentenceId = u32;
 
 #[derive(Debug, Deserialize, Serialize)]
 struct LearningSentence {
@@ -201,7 +189,7 @@ pub struct LearningData {
 
 #[derive(Serialize, Deserialize)]
 pub struct LearningTask {
-	pub word_index: usize,
+	pub word_id: usize,
 	pub sentence_id: SentenceId,
 	pub word: String,
 	pub word_pos: usize,
@@ -209,31 +197,42 @@ pub struct LearningTask {
 	pub translations: Vec<String>,
 }
 
+#[derive(Serialize, Deserialize)]
+pub enum TaskResult {
+	Succeeded, 
+	Failed
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct FinishedTask {
+	pub word_id: usize,
+	pub sentence_id: SentenceId,
+	pub result: TaskResult,
+}
+
 impl LearningData {
 	pub fn next_task(&mut self) -> LearningTask {
 		loop {
-			let word_index = self.word_weighted_index.sample(&mut thread_rng());
+			let word_id = self.word_weighted_index.sample(&mut thread_rng());
 
 			let matching_sentences: Vec<_> = self.sentences.0.iter()
-				.filter(|(_id, sentence)| util::contains_word(&sentence.original, &self.words.0[word_index].word))
+				.filter(|(_id, sentence)| util::contains_word(&sentence.original, &self.words.0[word_id].word))
 				.collect();
 			if matching_sentences.is_empty() {
 				// The word does not exist in any of the sentences, we can remove it.
-				self.words.0.remove(word_index);
+				self.words.0.remove(word_id);
+				self.word_weighted_index = self.words.create_weighted_index();
 				self.words.save();
 				continue;
 			}
 
-			let word = &self.words.0[word_index];
+			let word = &self.words.0[word_id];
 
-			let sentence_weighted_index = WeightedIndex::new(
-				matching_sentences.iter().map(|(_id, sentence)| sentence.weight * word.weight)
-			).unwrap();
-			let (sentence_id, sentence) = matching_sentences[sentence_weighted_index.sample(&mut thread_rng())];
+			let (&sentence_id, sentence) = matching_sentences.choose_weighted(&mut thread_rng(), |(_id, sentence)| sentence.weight * word.weight).unwrap();
 
 			return LearningTask {
-				word_index,
-				sentence_id: *sentence_id,
+				word_id,
+				sentence_id,
 				word: word.word.clone(),
 				word_pos: util::find_word_position(&sentence.original, &word.word).expect("the word should exist in the chosen sentence"),
 				sentence: sentence.original.clone(),
@@ -242,8 +241,18 @@ impl LearningData {
 		}
 	}
 
-	pub fn fail_task(&mut self, word_index: usize, sentence_id: SentenceId) {
-
+	pub fn finish_task(&mut self, task: FinishedTask) {
+		let weight_factor = match task.result {
+			TaskResult::Failed => 2.,
+			TaskResult::Succeeded => 0.8,
+		};
+		
+		let word = &mut self.words.0[task.word_id];
+		word.weight *= weight_factor;
+		self.word_weighted_index.update_weights(&[(task.word_id, &word.weight)]).expect("should be able to update word weight");
+		
+		let sentence = &mut self.sentences.0.get_mut(&task.sentence_id).expect("the failed sentence should exist");
+		sentence.weight *= weight_factor;
 	}
 	
 	pub fn load() -> Self {
@@ -254,5 +263,10 @@ impl LearningData {
 			sentences: LearningSentences::load(), 
 			word_weighted_index,
 		}
+	}
+
+	pub fn save(&mut self) {
+		self.words.save();
+		self.sentences.save();
 	}
 }

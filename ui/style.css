@@ -59,6 +59,10 @@ input {
     font-size: 1em;
 }
 
+input::placeholder {
+    color: rgba(255, 20, 60, 0.5);
+}
+
 button {
     background-color: transparent;
     color: var(--accent);
