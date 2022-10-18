@@ -58,7 +58,6 @@ function finish_task(result) {
         sentence_id: current_task?.sentence_id,
         result: result == TaskResult.Failed ? "Failed" : "Succeeded",
     };
-    console.log(finished_task);
     invoke("finish_task", { task: finished_task });
 }
 //----------------------------------------------------------------
@@ -103,3 +102,21 @@ function retry() {
     word_input.value = "";
     word_input.placeholder = current_task?.word;
 }
+//----------------------------------------------------------------
+const task_page = document.getElementById("task");
+const options_page = document.getElementById("options");
+document.getElementById("options_button")?.addEventListener("click", () => {
+    task_page.style.display = "none";
+    options_page.style.display = "flex";
+});
+document.getElementById("back_button")?.addEventListener("click", () => {
+    task_page.style.display = "flex";
+    options_page.style.display = "none";
+});
+const success_weight_factor_input = document.getElementById("success_weight_factor_input");
+const failure_weight_factor_input = document.getElementById("failure_weight_factor_input");
+invoke("get_weight_factors", {}).then((weight_factors) => {
+    console.log(weight_factors);
+    success_weight_factor_input.value = weight_factors.succeeded.toString();
+    failure_weight_factor_input.value = weight_factors.failed.toString();
+});

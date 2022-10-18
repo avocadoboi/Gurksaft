@@ -3,7 +3,9 @@ use std::sync::Mutex;
 
 use tauri::{Manager, State};
 
-use crate::learning_data::{LearningData, LearningTask, FinishedTask};
+use crate::learning_data::{LearningData, LearningTask, FinishedTask, WeightFactors};
+
+//----------------------------------------------------------------
 
 struct App {
 	learning_data: Mutex<LearningData>,
@@ -27,12 +29,18 @@ fn finish_task(app: State<App>, task: FinishedTask) {
 	app.learning_data.lock().unwrap().finish_task(task)
 }
 
+#[tauri::command]
+fn get_weight_factors(app: State<App>) -> WeightFactors {
+	app.learning_data.lock().unwrap().weight_factors
+}
+
 pub fn run() {
 	tauri::Builder::default()
 		.manage(App::new())
 		.invoke_handler(tauri::generate_handler![
 			next_task, 
-			finish_task
+			finish_task,
+			get_weight_factors
 		])
 		.on_window_event(|event| if let tauri::WindowEvent::Destroyed = event.event() {
 			let app: State<App> = event.window().state();

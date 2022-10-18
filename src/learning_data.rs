@@ -7,11 +7,15 @@ use rand::prelude::*;
 
 use serde::{Serialize, Deserialize};
 
+//----------------------------------------------------------------
+
 const WORD_FREQUENCY_SOURCE_FILE_NAME: &str = "source_data/words_by_frequency.txt";
 const SENTENCE_PAIR_SOURCE_FILE_NAME: &str = "source_data/sentence_pairs.tsv";
 
 const WORD_SAVE_FILE_NAME: &str = "save_data/words.tsv";
 const SENTENCE_SAVE_FILE_NAME: &str = "save_data/sentences";
+
+//----------------------------------------------------------------
 
 #[derive(Debug, Serialize, Deserialize)]
 struct LearningWord {
@@ -27,6 +31,8 @@ impl LearningWord {
 		}
 	}
 }
+
+//----------------------------------------------------------------
 
 struct LearningWords(Vec<LearningWord>);
 
@@ -95,14 +101,17 @@ impl LearningWords {
 	}
 }
 
+//----------------------------------------------------------------
+
 pub type SentenceId = u32;
 
 #[derive(Debug, Deserialize, Serialize)]
 struct LearningSentence {
 	original: String,
 	translations: BTreeMap<SentenceId, String>,
-	weight: f64,
 }
+
+//----------------------------------------------------------------
 
 struct LearningSentences(HashMap<SentenceId, LearningSentence>);
 
@@ -148,7 +157,6 @@ impl LearningSentences {
 				result.0.insert(pair.id_0, LearningSentence {
 					original: pair.original,
 					translations: BTreeMap::from([(pair.id_1, pair.translation)]),
-					weight: 1f64
 				});
 			}
 		}
@@ -181,11 +189,7 @@ impl LearningSentences {
 	}
 }
 
-pub struct LearningData {
-	words: LearningWords,
-	sentences: LearningSentences,
-	word_weighted_index: WeightedIndex<f64>,
-}
+//----------------------------------------------------------------
 
 #[derive(Serialize, Deserialize)]
 pub struct LearningTask {
@@ -210,6 +214,19 @@ pub struct FinishedTask {
 	pub result: TaskResult,
 }
 
+#[derive(Copy, Clone, Serialize, Deserialize)]
+pub struct WeightFactors {
+	pub succeeded: f64,
+	pub failed: f64,
+}
+
+pub struct LearningData {
+	words: LearningWords,
+	sentences: LearningSentences,
+	word_weighted_index: WeightedIndex<f64>,
+	pub weight_factors: WeightFactors,
+}
+
 impl LearningData {
 	pub fn next_task(&mut self) -> LearningTask {
 		loop {
@@ -222,13 +239,12 @@ impl LearningData {
 				// The word does not exist in any of the sentences, we can remove it.
 				self.words.0.remove(word_id);
 				self.word_weighted_index = self.words.create_weighted_index();
-				self.words.save();
 				continue;
 			}
 
 			let word = &self.words.0[word_id];
 
-			let (&sentence_id, sentence) = matching_sentences.choose_weighted(&mut thread_rng(), |(_id, sentence)| sentence.weight * word.weight).unwrap();
+			let (&sentence_id, sentence) = matching_sentences.choose(&mut thread_rng()).unwrap();
 
 			return LearningTask {
 				word_id,
@@ -242,26 +258,26 @@ impl LearningData {
 	}
 
 	pub fn finish_task(&mut self, task: FinishedTask) {
-		let weight_factor = match task.result {
-			TaskResult::Failed => 2.,
-			TaskResult::Succeeded => 0.8,
-		};
-		
 		let word = &mut self.words.0[task.word_id];
-		word.weight *= weight_factor;
+		word.weight *= match task.result {
+			TaskResult::Succeeded => self.weight_factors.succeeded,
+			TaskResult::Failed => self.weight_factors.failed
+		};
 		self.word_weighted_index.update_weights(&[(task.word_id, &word.weight)]).expect("should be able to update word weight");
-		
-		let sentence = &mut self.sentences.0.get_mut(&task.sentence_id).expect("the failed sentence should exist");
-		sentence.weight *= weight_factor;
 	}
 	
 	pub fn load() -> Self {
 		let words = LearningWords::load();
 		let word_weighted_index = words.create_weighted_index();
+		let weight_factors = WeightFactors {
+			succeeded: 0.8,
+			failed: 2.,
+		};
 		LearningData { 
 			words, 
 			sentences: LearningSentences::load(), 
 			word_weighted_index,
+			weight_factors
 		}
 	}
 
