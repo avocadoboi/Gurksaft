@@ -173,7 +173,14 @@ const success_weight_factor_input = document.getElementById("success_weight_fact
 const failure_weight_factor_input = document.getElementById("failure_weight_factor_input")! as HTMLInputElement;
 
 invoke("get_weight_factors", {}).then((weight_factors: WeightFactors) => {
-	console.log(weight_factors);
 	success_weight_factor_input.value = weight_factors.succeeded.toString();
 	failure_weight_factor_input.value = weight_factors.failed.toString();
 });
+
+success_weight_factor_input.addEventListener("change", () => {
+	invoke("set_success_weight_factor", { factor: success_weight_factor_input.value });
+});
+failure_weight_factor_input.addEventListener("change", () => {
+	invoke("set_failure_weight_factor", { factor: failure_weight_factor_input.value });
+});
+

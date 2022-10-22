@@ -53,14 +53,6 @@
     "updater": {
       "active": false
     },
-    "windows": [
-      {
-        "fullscreen": false,
-        "height": 600,
-        "resizable": true,
-        "title": "Language learning tool",
-        "width": 800
-      }
-    ]
+    "windows": []
   }
 }

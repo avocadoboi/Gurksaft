@@ -1,18 +1,8 @@
-:root {
-    --accent: #fe0;
-    --hover: #fe01;
-    --click: #fe02;
-    --secondary: #aaa;
-    --secondary-hover: #aaa1;
-    --secondary-click: #aaa2;
-    --red: #f16;
-    --red-hover: #f161;
-    --red-click: #f162;
-}
+
 
 @font-face {
     font-family: roboto;
-    src: url(Roboto-Regular.ttf);
+    src: url(../common/Roboto-Regular.ttf);
 }
 
 body {
@@ -34,6 +24,22 @@ p {
     margin-bottom: 24px;
 }
 
+input {
+    background-color: transparent;
+    color: white;
+    outline: none;
+    border: none;
+    border-bottom: 2px solid var(--accent);
+    width: 50px;
+
+    font-family: roboto;
+    font-size: 1em;
+}
+
+input::placeholder {
+    color: rgba(255, 50, 140, 0.8);
+}
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     -webkit-appearance: none;
@@ -42,27 +48,6 @@ input::-webkit-inner-spin-button {
 
 input[type=number] {
     -moz-appearance: textfield;
-}
-
-button {
-    background-color: transparent;
-    color: var(--accent);
-    border: 2px solid var(--accent);
-    border-radius: 8px;
-    cursor: pointer;
-    padding: 8px 16px;
-    
-    font-family: roboto;
-    font-size: 0.8em;
-
-    /* transition: background-color 50ms ease-in-out; */
-}
-
-button:hover {
-    background-color: var(--hover);
-}
-button:active {
-    background-color: var(--click);
 }
 
 .red_button {
@@ -84,8 +69,7 @@ button:active {
 }
 
 #task {
-    display: none;
-    /* display: flex; */
+    display: flex;
     flex-direction: column;
     align-items: flex-start;
 }
@@ -110,15 +94,15 @@ button:active {
     padding: 4px;
 }
 #options_button:hover {
-    background-color: var(--secondary-hover);
+    background-color: #aaa1;
 }
 #options_button:active {
-    background-color: var(--secondary-click);
+    background-color: #aaa2;
 }
 #options_button svg {
     width: 1.5em;
     height: 1.5em;
-    color: var(--secondary);
+    color: #aaa;
 }
 
 #phrase_header {
@@ -150,22 +134,6 @@ button:active {
 }
 #original_text > p {
     display: inline;
-}
-
-input {
-    background-color: transparent;
-    color: white;
-    outline: none;
-    border: none;
-    border-bottom: 2px solid var(--accent);
-    width: 50px;
-
-    font-family: roboto;
-    font-size: 1em;
-}
-
-input::placeholder {
-    color: rgba(255, 50, 140, 0.8);
 }
 
 #next_button {
@@ -217,4 +185,15 @@ li + li {
 #options input {
     width: 80px;
     font-size: 0.9em;
+}
+
+#add_language_button {
+    border-radius: 30%;
+    padding: 0;
+}
+#add_language_button svg {
+    color: var(--accent);
+    width: 1.5em;
+    height: 1.5em;
+
 }

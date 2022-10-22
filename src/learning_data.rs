@@ -1,4 +1,5 @@
 use crate::util;
+use crate::source_data::{Language};
 
 use std::{collections::{HashMap, BTreeMap}, io::Write};
 
@@ -9,11 +10,7 @@ use serde::{Serialize, Deserialize};
 
 //----------------------------------------------------------------
 
-const WORD_FREQUENCY_SOURCE_FILE_NAME: &str = "source_data/words_by_frequency.txt";
-const SENTENCE_PAIR_SOURCE_FILE_NAME: &str = "source_data/sentence_pairs.tsv";
-
-const WORD_SAVE_FILE_NAME: &str = "save_data/words.tsv";
-const SENTENCE_SAVE_FILE_NAME: &str = "save_data/sentences";
+const SAVE_DIRECTORY: &str = "save_data/";
 
 //----------------------------------------------------------------
 
@@ -34,6 +31,7 @@ impl LearningWord {
 
 //----------------------------------------------------------------
 
+#[derive(Deserialize, Serialize)]
 struct LearningWords(Vec<LearningWord>);
 
 impl LearningWords {
@@ -113,6 +111,7 @@ struct LearningSentence {
 
 //----------------------------------------------------------------
 
+#[derive(Deserialize, Serialize)]
 struct LearningSentences(HashMap<SentenceId, LearningSentence>);
 
 impl LearningSentences {
@@ -220,14 +219,17 @@ pub struct WeightFactors {
 	pub failed: f64,
 }
 
+
+
 pub struct LearningData {
+	language: &'static Language,
 	words: LearningWords,
 	sentences: LearningSentences,
 	word_weighted_index: WeightedIndex<f64>,
 	pub weight_factors: WeightFactors,
 }
 
-impl LearningData {
+impl LearningData {	
 	pub fn next_task(&mut self) -> LearningTask {
 		loop {
 			let word_id = self.word_weighted_index.sample(&mut thread_rng());
@@ -282,6 +284,8 @@ impl LearningData {
 	}
 
 	pub fn save(&mut self) {
+		
+
 		self.words.save();
 		self.sentences.save();
 	}
