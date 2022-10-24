@@ -1,34 +1,118 @@
 :root {
-    --hover-alpha: 0.08;
-    --click-alpha: 0.15;
-    --accent: rgb(246, 255, 0);
-    --hover: rgba(246, 255, 0, var(--hover-alpha));
-    --click: rgba(246, 255, 0, var(--click-alpha));
-    --secondary: rgb(24, 134, 237);
-    --secondary-hover: rgba(24, 134, 237, var(--hover-alpha));
-    --secondary-click: rgba(24, 134, 237, var(--click-alpha));
+    --accent: rgb(200, 255, 0);
+    --secondary: rgb(68, 37, 224);
     --red: rgb(255, 24, 105);
-    --red-hover: rgba(255, 24, 105, var(--hover-alpha));
-    --red-click: rgba(255, 24, 105, var(--click-alpha));
+}
+
+@font-face {
+    font-family: roboto;
+    src: url(../common/Roboto-Regular.ttf);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    background-color: rgb(30, 30, 30);
+    
+    color: white;
+    font-family: roboto;
+    font-size: 1.3em;
+}
+
+h1 {
+    font-size: 2em;
+    font-weight: normal;
+    margin-top: 0;
+    margin-bottom: 0.8em;
+    text-align: center;
+    width: 100%;
+}
+h2 {
+    font-size: 1.5em;
+    font-weight: normal;
+    color: #ddd;
+    margin-top: 0;
+    margin-bottom: 0.7em;
+}
+
+p {
+    margin: 0;
 }
 
 button {
-    background-color: transparent;
-    color: var(--accent);
-    border: 2px solid var(--accent);
-    border-radius: 8px;
+    background-color: var(--secondary);
+    color: white;
+    border-radius: 0.3em;
     cursor: pointer;
-    padding: 8px 16px;
+    padding: 0.45em 0.8em;
     
     font-family: roboto;
-    font-size: 0.8em;
+    font-weight: 500;
+    font-size: 1em;
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.7);
 
     /* transition: background-color 50ms ease-in-out; */
 }
 
-button:hover {
-    background-color: var(--hover);
+.accent-button {
+    background-color: var(--accent);
+    border: none;
+    /* border: 0.1em solid black; */
+    color: black;
 }
-button:active {
-    background-color: var(--click);
+
+.red-button {
+    background-color: transparent;
+    color: var(--red);
+    border: 1px solid var(--red);
+    /* border: none; */
+}
+
+button > svg {
+    width: 1em;
+    height: 1em;
+}
+
+select {
+    appearance: none;
+    background-color: transparent;
+    border-radius: 8px;
+    border: 2px solid var(--secondary);
+    outline: none;
+    font-family: roboto;
+    font-size: 1em;
+    color: white;
+    padding: 0.4em 0.6em;
+    padding-right: 1.5em;
+    cursor: pointer;
+}
+select:invalid {
+    color: #aaa;
+}
+.select {
+    display: grid;
+    grid-template-areas: "select";
+    align-items: center;
+}
+.select::after {
+    content: "";
+    width: 0.6em;
+    height: 0.4em;
+    margin-right: 0.6em;
+    background-color: var(--secondary);
+    clip-path: polygon(100% 0%, 0% 0%, 50% 100%);
+    justify-self: end;
+}
+select, .select::after {
+    grid-area: select;
 }

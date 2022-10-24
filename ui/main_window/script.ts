@@ -33,12 +33,12 @@ let task_state = TaskState.InputWord;
 
 const invoke = (window as any).__TAURI__.invoke;
 
-const word_input = document.getElementById("word_input")! as HTMLInputElement;
-const next_button = document.getElementById("next_button")! as HTMLButtonElement;
+const word_input = document.getElementById("word-input")! as HTMLInputElement;
+const next_button = document.getElementById("next-button")! as HTMLButtonElement;
 
 function next_task() {
-	const pre_input_word_text = document.getElementById("pre_input_word_text") as HTMLParagraphElement;
-	const post_input_word_text = document.getElementById("post_input_word_text") as HTMLParagraphElement;
+	const pre_input_word_text = document.getElementById("pre-input-word-text") as HTMLParagraphElement;
+	const post_input_word_text = document.getElementById("post-input-word-text") as HTMLParagraphElement;
 	const translations_list = document.getElementById("translations") as HTMLUListElement;
 
 	invoke("next_task", {}).then((task: LearningTask) => {
@@ -152,12 +152,12 @@ function retry() {
 const task_page = document.getElementById("task")!;
 const options_page = document.getElementById("options")!;
 
-document.getElementById("options_button")?.addEventListener("click", () => {
+document.getElementById("options-button")?.addEventListener("click", () => {
 	task_page.style.display = "none";
 	options_page.style.display = "flex";
 });
 
-document.getElementById("back_button")?.addEventListener("click", () => {
+document.getElementById("back-button")?.addEventListener("click", () => {
 	task_page.style.display = "flex";
 	options_page.style.display = "none";
 });
@@ -169,8 +169,8 @@ type WeightFactors = {
 	failed: number,
 };
 
-const success_weight_factor_input = document.getElementById("success_weight_factor_input")! as HTMLInputElement;
-const failure_weight_factor_input = document.getElementById("failure_weight_factor_input")! as HTMLInputElement;
+const success_weight_factor_input = document.getElementById("success-weight-factor-input")! as HTMLInputElement;
+const failure_weight_factor_input = document.getElementById("failure-weight-factor-input")! as HTMLInputElement;
 
 invoke("get_weight_factors", {}).then((weight_factors: WeightFactors) => {
 	success_weight_factor_input.value = weight_factors.succeeded.toString();

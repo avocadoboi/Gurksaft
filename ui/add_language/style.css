@@ -1,0 +1,79 @@
+
+
+#container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    
+    padding: 2em;
+    /* max-width: 35em; */
+    /* width: 100%; */
+}
+#target-language {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    align-items: center;
+    margin-bottom: 1.1em;
+}
+#target-language > h2 {
+    margin-bottom: 0;
+}
+
+#target-language-dropdown-wrapper {
+    align-self: center;
+    margin-bottom: 1em;
+}
+#translation-languages {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    margin-bottom: 1.2em;
+}
+
+#translation-language-list {
+    display: flex;
+    flex-direction: column;
+    padding-left: 1em;
+}
+#translation-language-list > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1em;
+    margin-bottom: 0.5em;
+}
+#translation-language-list > div:last-child {
+    margin-bottom: 1em;
+}
+#translation-language-list p {
+    margin: 0;
+}
+
+.remove-translation-language-button {
+    /* border: none; */
+    border-radius: 50%;
+    padding: 4px;
+}
+
+#add-translation-language {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    /* width:fit-content; */
+    gap: 0.5em;
+}
+#add-translation-language-button {
+    background-color: transparent;
+    color: var(--secondary);
+    border: 2px solid var(--secondary);
+    border-radius: 50%;
+    padding: 4px;
+    font-size: 1.3em;
+}
+
+#download-button {
+    align-self: center;
+}

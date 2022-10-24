@@ -6,29 +6,29 @@ pub struct Language {
     pub id: &'static str,
 }
 
-const LANGUAGES: &[Language] = &[
+pub const LANGUAGES: &[Language] = &[
     Language {
-        name: "afrikaans",
+        name: "Afrikaans",
         id: "af",
     },
     Language {
-        name: "arabic",
+        name: "Arabic",
         id: "ar",
     },
     Language {
-        name: "bulgarian",
+        name: "Bulgarian",
         id: "bg",
     },
     Language {
-        name: "english",
+        name: "English",
         id: "en",
     },
     Language {
-        name: "finnish",
+        name: "Finnish",
         id: "fi",
     },
     Language {
-        name: "swedish",
+        name: "Swedish",
         id: "sv",
     },
 ];

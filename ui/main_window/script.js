@@ -16,11 +16,11 @@ var TaskState;
 let task_state = TaskState.InputWord;
 //----------------------------------------------------------------
 const invoke = window.__TAURI__.invoke;
-const word_input = document.getElementById("word_input");
-const next_button = document.getElementById("next_button");
+const word_input = document.getElementById("word-input");
+const next_button = document.getElementById("next-button");
 function next_task() {
-    const pre_input_word_text = document.getElementById("pre_input_word_text");
-    const post_input_word_text = document.getElementById("post_input_word_text");
+    const pre_input_word_text = document.getElementById("pre-input-word-text");
+    const post_input_word_text = document.getElementById("post-input-word-text");
     const translations_list = document.getElementById("translations");
     invoke("next_task", {}).then((task) => {
         pre_input_word_text.innerText = task.sentence.substring(0, task.word_pos);
@@ -105,18 +105,23 @@ function retry() {
 //----------------------------------------------------------------
 const task_page = document.getElementById("task");
 const options_page = document.getElementById("options");
-document.getElementById("options_button")?.addEventListener("click", () => {
+document.getElementById("options-button")?.addEventListener("click", () => {
     task_page.style.display = "none";
     options_page.style.display = "flex";
 });
-document.getElementById("back_button")?.addEventListener("click", () => {
+document.getElementById("back-button")?.addEventListener("click", () => {
     task_page.style.display = "flex";
     options_page.style.display = "none";
 });
-const success_weight_factor_input = document.getElementById("success_weight_factor_input");
-const failure_weight_factor_input = document.getElementById("failure_weight_factor_input");
+const success_weight_factor_input = document.getElementById("success-weight-factor-input");
+const failure_weight_factor_input = document.getElementById("failure-weight-factor-input");
 invoke("get_weight_factors", {}).then((weight_factors) => {
-    console.log(weight_factors);
     success_weight_factor_input.value = weight_factors.succeeded.toString();
     failure_weight_factor_input.value = weight_factors.failed.toString();
+});
+success_weight_factor_input.addEventListener("change", () => {
+    invoke("set_success_weight_factor", { factor: success_weight_factor_input.value });
+});
+failure_weight_factor_input.addEventListener("change", () => {
+    invoke("set_failure_weight_factor", { factor: failure_weight_factor_input.value });
 });

@@ -213,20 +213,11 @@ pub struct FinishedTask {
 	pub result: TaskResult,
 }
 
-#[derive(Copy, Clone, Serialize, Deserialize)]
-pub struct WeightFactors {
-	pub succeeded: f64,
-	pub failed: f64,
-}
-
-
-
+#[derive(Deserialize, Serialize)]
 pub struct LearningData {
-	language: &'static Language,
 	words: LearningWords,
 	sentences: LearningSentences,
 	word_weighted_index: WeightedIndex<f64>,
-	pub weight_factors: WeightFactors,
 }
 
 impl LearningData {	
@@ -271,21 +262,14 @@ impl LearningData {
 	pub fn load() -> Self {
 		let words = LearningWords::load();
 		let word_weighted_index = words.create_weighted_index();
-		let weight_factors = WeightFactors {
-			succeeded: 0.8,
-			failed: 2.,
-		};
 		LearningData { 
 			words, 
 			sentences: LearningSentences::load(), 
 			word_weighted_index,
-			weight_factors
 		}
 	}
 
 	pub fn save(&mut self) {
-		
-
 		self.words.save();
 		self.sentences.save();
 	}

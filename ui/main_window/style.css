@@ -1,29 +1,4 @@
 
-
-@font-face {
-    font-family: roboto;
-    src: url(../common/Roboto-Regular.ttf);
-}
-
-body {
-    margin: 0;
-    
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-
-    background-color: rgb(30, 30, 30);
-    
-    color: white;
-    font-family: roboto;
-    font-size: 2em;
-}
-
-p {
-    margin-top: 0;
-    margin-bottom: 24px;
-}
-
 input {
     background-color: transparent;
     color: white;
@@ -50,16 +25,9 @@ input[type=number] {
     -moz-appearance: textfield;
 }
 
-.red_button {
-    color: var(--red);
-    border: 1px solid var(--red);
-    /* border: none; */
-}
-.red_button:hover {
-    background-color: var(--red-hover);
-}
-.red_button:active {
-    background-color: var(--red-click);
+.section_header {
+    font-size: 0.8em;
+    color: #bbb;
 }
 
 #container {
@@ -74,38 +42,38 @@ input[type=number] {
     align-items: flex-start;
 }
 
-#task_header {
+#task-header {
     width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
     margin-bottom: 32px;
 }
-#task_header p {
+#task-header p {
     font-size: 1.2em;
     flex-grow: 1;
     margin: 0;
 }
 
-#options_button {
+#options-button {
     border: none;
     /* border: 1px solid var(--accent); */
     border-radius: 50%;
     padding: 4px;
 }
-#options_button:hover {
+#options-button:hover {
     background-color: #aaa1;
 }
-#options_button:active {
+#options-button:active {
     background-color: #aaa2;
 }
-#options_button svg {
+#options-button svg {
     width: 1.5em;
     height: 1.5em;
     color: #aaa;
 }
 
-#phrase_header {
+#phrase-header {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -113,30 +81,25 @@ input[type=number] {
     width: 100%;
     margin-bottom: 24px;
 }
-#phrase_header p {
+#phrase-header p {
     flex-grow: 1;
     margin: 0;
 }
-#phrase_header button {
+#phrase-header button {
     font-size: 0.5em;
     padding: 5px 10px;
 }
 
-.section_header {
-    font-size: 0.8em;
-    color: #bbb;
-}
-
-#original_text {
+#original-text {
     align-self: center;
     text-align: center;
     padding: 0px 16px;
 }
-#original_text > p {
+#original-text > p {
     display: inline;
 }
 
-#next_button {
+#next-button {
     align-self: center;
     margin-top: 20px;
     margin-bottom: 16px;
@@ -187,11 +150,11 @@ li + li {
     font-size: 0.9em;
 }
 
-#add_language_button {
+#add-language-button {
     border-radius: 30%;
     padding: 0;
 }
-#add_language_button svg {
+#add-language-button svg {
     color: var(--accent);
     width: 1.5em;
     height: 1.5em;

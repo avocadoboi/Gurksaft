@@ -8,18 +8,42 @@
 
 <body>
     <div id="container">
-        <p>Add language</p>
-        <p>Target language</p>
-        <select class="language_dropdown" id="target_language"></select>
-        <p>Translation languages</p>
-        <div>
-            <ul id="translation_language_list">
-            </ul>
-            <select class="language_dropdown" id="translation_language"></select>
-            <button>Add</button>
+        <h1>Add language</h1>
+        
+        <!-- <h2>Target language</h2> -->
+        <div id="target-language">
+            <h2>Target language</h2>
+            <div class="select">
+                <select class="language-dropdown" id="target-language-dropdown" required>
+                    <option value="" disabled selected>Choose language</option>
+                </select>
+            </div>    
         </div>
-        <button>Download data</button>
+        <!-- <div class="select" id="target-language-dropdown-wrapper">
+            <select class="language-dropdown" id="target-language-dropdown" required>
+                <option value="" disabled selected>Choose language</option>
+            </select>
+        </div> -->
+
+        <h2>Translation languages</h2>
+        <div id="translation-languages">
+            <div id="translation-language-list"></div>
+            <div id="add-translation-language">
+                <div class="select">
+                    <select class="language-dropdown" id="translation-language" required>
+                        <option value="" disabled selected>Choose language</option>
+                    </select>
+                </div>
+                <button id="add-translation-language-button">
+					<svg viewBox="0 0 48 48"><path fill="currentColor" d="M21.75 38.75V26.3H9.25v-4.55h12.5V9.25h4.55v12.5h12.5v4.55H26.3v12.45Z"/></svg>
+                </button>
+            </div>
+        </div>
+        <button id="download-button" class="accent-button ripple">Download data</button>
     </div>
+
+    <script src="../common/ui.js"></script>
+    <script src="script.js"></script>
 </body>
 
 </html>
