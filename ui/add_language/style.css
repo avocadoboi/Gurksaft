@@ -14,43 +14,42 @@
     flex-direction: row;
     gap: 1em;
     align-items: center;
-    margin-bottom: 1.1em;
+    margin-bottom: 1.5em;
 }
-#target-language > h2 {
-    margin-bottom: 0;
+h3 {
+    margin: 0;
 }
 
 #target-language-dropdown-wrapper {
-    align-self: center;
     margin-bottom: 1em;
 }
 #translation-languages {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    gap: 1em;
+    align-items: center;
     width: 100%;
-    margin-bottom: 1.2em;
+    margin-bottom: 1em;
 }
 
 #translation-language-list {
     display: flex;
-    flex-direction: column;
-    padding-left: 1em;
+    flex-direction: row;
+    gap: 1.5em;
+    /* font-size: 0.8em; */
+    /* padding-left: 0.8em; */
 }
 #translation-language-list > div {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
-    gap: 1em;
-    margin-bottom: 0.5em;
-}
-#translation-language-list > div:last-child {
+    /* justify-content: space-between; */
+    gap: 0.5em;
     margin-bottom: 1em;
 }
-#translation-language-list p {
-    margin: 0;
-}
+/* #translation-language-list > div:last-child {
+    margin-bottom: 1em;
+} */
 
 .remove-translation-language-button {
     /* border: none; */
@@ -75,5 +74,6 @@
 }
 
 #download-button {
+    margin-top: 1em;
     align-self: center;
 }

@@ -17,8 +17,6 @@ invoke("get_language_list", {}).then((languages: Language[]) => {
 	}
 });
 
-const translation_languages: Language[] = [];
-
 const translation_languages_element = document.getElementById("translation-language-list")! as HTMLUListElement;
 const translation_language_dropdown = document.getElementById("translation-language")! as HTMLSelectElement;
 
@@ -36,4 +34,10 @@ document.getElementById("add-translation-language-button")?.addEventListener("cl
 	`;
 	translation_language_dropdown.options.remove(translation_language_dropdown.selectedIndex);
 	translation_language_dropdown.selectedIndex = 0;
+});
+
+const target_language_dropdown = document.getElementById("target-language-dropdown")! as HTMLSelectElement;
+
+target_language_dropdown.addEventListener("change", () => {
+	
 });
