@@ -63,3 +63,8 @@ target_language_dropdown.addEventListener("change", () => {
     previous_target_language = target_language_dropdown.value;
     remove_language_from_dropdown(translation_language_dropdown, previous_target_language);
 });
+//----------------------------------------------------------------
+document.getElementById("download-button")?.addEventListener("click", () => {
+    document.getElementById("add-language").style.display = "none";
+    document.getElementById("download-progress").style.display = "flex";
+});

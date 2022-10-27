@@ -1,14 +1,20 @@
 
 
 #container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    
     padding: 2em;
     /* max-width: 35em; */
     /* width: 100%; */
 }
+
+#container > div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+#container > #download-progress {
+    display: none;
+}
+
 #target-language {
     display: flex;
     flex-direction: row;
