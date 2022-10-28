@@ -1,5 +1,7 @@
 "use strict";
 const invoke = window.__TAURI__.invoke;
+// const emit = (window as any).__TAURI__.event.emit;
+const listen = window.__TAURI__.event.listen;
 invoke("get_language_list", {}).then((languages) => {
     for (const dropdown of document.getElementsByClassName("language-dropdown")) {
         for (const language of languages) {
@@ -46,12 +48,14 @@ document.getElementById("add-translation-language-button")?.addEventListener("cl
     translation_language_dropdown.options.remove(translation_language_dropdown.selectedIndex);
     translation_language_dropdown.selectedIndex = 0;
     remove_language_from_dropdown(target_language_dropdown, translation_language);
+    update_download_button();
     for (const element of translation_languages_element.children) {
         element.lastElementChild?.addEventListener("click", () => {
             const language = element.firstElementChild?.innerHTML;
             add_language_to_dropdown(translation_language_dropdown, language);
             add_language_to_dropdown(target_language_dropdown, language);
             element.remove();
+            update_download_button();
         });
     }
 });
@@ -62,9 +66,45 @@ target_language_dropdown.addEventListener("change", () => {
     add_language_to_dropdown(translation_language_dropdown, previous_target_language);
     previous_target_language = target_language_dropdown.value;
     remove_language_from_dropdown(translation_language_dropdown, previous_target_language);
+    update_download_button();
 });
 //----------------------------------------------------------------
-document.getElementById("download-button")?.addEventListener("click", () => {
+const download_button = document.getElementById("download-button");
+function update_download_button() {
+    download_button.disabled = target_language_dropdown.selectedIndex <= 0 || translation_languages_element.childElementCount <= 0;
+}
+//----------------------------------------------------------------
+download_button.addEventListener("click", () => {
     document.getElementById("add-language").style.display = "none";
     document.getElementById("download-progress").style.display = "flex";
+    const translation_languages = [];
+    for (const element of translation_languages_element.children) {
+        translation_languages.push(element.firstElementChild?.innerHTML);
+    }
+    invoke("download_language_data", {
+        info: {
+            target_language: target_language_dropdown.value,
+            translation_languages
+        }
+    });
+});
+//----------------------------------------------------------------
+const download_status_element = document.getElementById("download-progress-text");
+const progress_to_string = (progress) => progress <= 1 ? `${Math.round(progress * 100)}%` : `${progress} bytes`;
+listen("download_status", (event) => {
+    if (event.payload.DownloadingWords) {
+        let status = event.payload.DownloadingWords;
+        download_status_element.innerText = `Downloading word list... ${progress_to_string(status.progress)}`;
+    }
+    else if (event.payload.PreparingSentenceFile) {
+        let status = event.payload.PreparingSentenceFile;
+        download_status_element.innerText = `Preparing ${status.translation_language} translations...`;
+    }
+    else if (event.payload.DownlodingSentenceFile) {
+        let status = event.payload.DownlodingSentenceFile;
+        download_status_element.innerText = `Downloading ${status.translation_language} translations... ${progress_to_string(status.progress)}`;
+    }
+    else if (event.payload.Loading) {
+        download_status_element.innerText = "Parsing data...";
+    }
 });

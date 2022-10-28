@@ -23,8 +23,8 @@ function update_ripple(time_stamp, element) {
     if (ripple_start_time == undefined) {
         ripple_start_time = element.ripple_start_time = time_stamp;
     }
-    const total_time = 700;
-    const min_scale = 0.3;
+    const total_time = 500;
+    const min_scale = 0.4;
     const t = Math.min(time_stamp - ripple_start_time, total_time);
     const scale = min_scale + (1 - min_scale) * (1 - Math.exp(-7 * t / total_time)) / (1 - Math.exp(-7));
     element.style.transform = `translateX(-50%) translateY(-50%) scale(${scale})`;
@@ -55,7 +55,7 @@ function add_ripple(element, event) {
 }
 function fade_ripple(element) {
     for (const ripple of element.getElementsByClassName("ripple-element")) {
-        ripple.style.opacity = "0";
+        ripple.style.backgroundColor = "transparent";
     }
 }
 const elements_with_ripple = document.getElementsByClassName("ripple");

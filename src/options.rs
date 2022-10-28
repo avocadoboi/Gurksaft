@@ -17,8 +17,8 @@ pub struct WeightFactors {
 
 #[derive(Deserialize, Serialize)]
 pub struct Options {
-    language_index: usize,
-    weight_factors: WeightFactors,
+    pub language_index: usize,
+    pub weight_factors: WeightFactors,
 }
 
 impl Options {

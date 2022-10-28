@@ -1,18 +1,8 @@
 
-
-#container {
-    padding: 2em;
-    /* max-width: 35em; */
-    /* width: 100%; */
-}
-
-#container > div {
+#add-language {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-}
-#container > #download-progress {
-    display: none;
 }
 
 #target-language {
@@ -20,7 +10,7 @@
     flex-direction: row;
     gap: 1em;
     align-items: center;
-    margin-bottom: 1.5em;
+    margin-bottom: 1.2em;
 }
 h3 {
     margin: 0;
@@ -42,23 +32,16 @@ h3 {
     display: flex;
     flex-direction: row;
     gap: 1.5em;
-    /* font-size: 0.8em; */
-    /* padding-left: 0.8em; */
 }
 #translation-language-list > div {
     display: flex;
     flex-direction: row;
     align-items: center;
-    /* justify-content: space-between; */
     gap: 0.5em;
     margin-bottom: 1em;
 }
-/* #translation-language-list > div:last-child {
-    margin-bottom: 1em;
-} */
 
 .remove-translation-language-button {
-    /* border: none; */
     border-radius: 50%;
     padding: 4px;
 }
@@ -67,7 +50,6 @@ h3 {
     display: flex;
     flex-direction: row;
     align-items: center;
-    /* width:fit-content; */
     gap: 0.5em;
 }
 #add-translation-language-button {
@@ -82,4 +64,16 @@ h3 {
 #download-button {
     margin-top: 1em;
     align-self: center;
+}
+
+/*----------------------------------------------------------------*/
+
+#download-progress {
+    display: none;
+    align-self: center;
+}
+
+#download-progress-text {
+    font-size: 1em;
+    margin: 0;
 }

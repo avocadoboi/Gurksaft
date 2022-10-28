@@ -1,38 +1,10 @@
 
-input {
-    background-color: transparent;
-    color: white;
-    outline: none;
-    border: none;
-    border-bottom: 2px solid var(--accent);
-    width: 50px;
-
-    font-family: roboto;
-    font-size: 1em;
-}
-
 input::placeholder {
     color: rgba(255, 50, 140, 0.8);
 }
 
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-input[type=number] {
-    -moz-appearance: textfield;
-}
-
-.section_header {
-    font-size: 0.8em;
-    color: #bbb;
-}
-
-#container {
-    padding: 32px;
-    min-width: 400px;
+h2 {
+    text-align: center;
     width: 100%;
 }
 
@@ -40,6 +12,8 @@ input[type=number] {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    min-width: 40em;
+    width: 100%;
 }
 
 #task-header {
@@ -124,39 +98,40 @@ li + li {
 #options {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
+}
+#options h3 {
+    margin-bottom: 0;
 }
 
 #options > div {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 12px;
-    font-size: 0.8em;
-    margin-bottom: 16px;
-}
-
-#options > div > p {
-    margin: 0;
-}
-
-#options > p {
-    align-self: flex-start;
-    /* margin-bottom:  */
+    gap: 1em;
+    margin-bottom: 1em;
 }
 
 #options input {
-    width: 80px;
-    font-size: 0.9em;
+    width: 3em;
 }
 
 #add-language-button {
-    border-radius: 30%;
-    padding: 0;
+    background-color: transparent;
+    color: var(--secondary);
+    border-radius: 50%;
+    border: 1px solid var(--secondary);
+    padding: 0.1em;
 }
 #add-language-button svg {
-    color: var(--accent);
     width: 1.5em;
     height: 1.5em;
+}
 
+#weight-visualization-header {
+    margin-top: 0.5em;
+}
+
+#back-button {
+    align-self: center;
 }
