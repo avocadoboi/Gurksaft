@@ -142,4 +142,7 @@ listen("download_status", (event: any) => {
 	else if (event.payload.Loading) {
 		download_status_element.innerText = "Parsing data...";
 	}
+	else {
+		console.log(JSON.stringify(event));
+	}
 });

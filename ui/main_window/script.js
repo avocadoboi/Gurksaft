@@ -18,6 +18,9 @@ let task_state = TaskState.InputWord;
 const invoke = window.__TAURI__.invoke;
 const word_input = document.getElementById("word-input");
 const next_button = document.getElementById("next-button");
+function set_button_text(button, text) {
+    next_button.firstChild.textContent = text;
+}
 function next_task() {
     const pre_input_word_text = document.getElementById("pre-input-word-text");
     const post_input_word_text = document.getElementById("post-input-word-text");
@@ -31,7 +34,7 @@ function next_task() {
         word_input.placeholder = "";
         word_input.readOnly = false;
         word_input.style.color = "white";
-        next_button.innerText = "Check";
+        set_button_text(next_button, "Check");
         current_task = task;
         task_state = TaskState.InputWord;
         translations_list.innerHTML = "";
@@ -92,7 +95,7 @@ word_input.addEventListener("keyup", e => {
 function show_success_feedback() {
     word_input.style.color = "rgb(20, 255, 50)";
     word_input.readOnly = true;
-    next_button.innerText = "Next";
+    set_button_text(next_button, "Next");
     task_state = TaskState.Feedback;
 }
 function retry() {

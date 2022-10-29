@@ -1,11 +1,16 @@
 
-pub fn create_parent_directory_if_nonexistent(path: &str) {
-	if let Some(directory) = std::path::Path::new(path).parent() {
-		if !directory.exists() {
-			std::fs::create_dir(directory).unwrap();
-		}
+pub fn create_directory_if_nonexistent(path: &str) {
+	let directory = std::path::Path::new(path);
+	if !directory.exists() {
+		std::fs::create_dir(directory).unwrap();
 	}
 }
+pub fn create_parent_directory_if_nonexistent(path: &str) {
+	if let Some(directory) = std::path::Path::new(path).parent() && !directory.exists() {
+		std::fs::create_dir(directory).unwrap();
+	}
+}
+
 pub fn contains_word(sentence: &str, word_to_find: &str) -> bool {
 	sentence.to_lowercase().split_whitespace().any(|word| word == word_to_find)
 }

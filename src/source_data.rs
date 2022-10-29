@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
 
 //----------------------------------------------------------------
 
@@ -249,7 +248,7 @@ pub struct SourceDataInfo {
 }
 
 pub struct SourceData {
-	pub info: SourceDataInfo,
+	pub language_index: usize,
 	pub word_list: Vec<u8>,
 	pub sentence_list: Vec<u8>,
 }
@@ -287,19 +286,21 @@ impl<F: Fn(SourceDataDownloadStatus)> SourceDataDownloader<F> {
 		}
 	}
 
-	async fn download(mut self) -> SourceData {		
-		let word_list = self.download_words().await;
+	async fn download(&self) -> SourceData {
+		let language_index = LANGUAGES.iter().position(|language| language.name == self.info.target_language).unwrap();
+
+		let word_list = self.download_words(language_index).await;
 		let sentence_list = self.download_sentence_lists().await;
 
 		SourceData {
-			info: self.info,
+			language_index,
 			word_list,
 			sentence_list,
 		}
 	}
 	
-	async fn download_words(&self) -> Vec<u8> {
-		let language = LANGUAGES.iter().find(|language| language.name == self.info.target_language).unwrap();
+	async fn download_words(&self, language_index: usize) -> Vec<u8> {
+		let language = &LANGUAGES[language_index];
 
 		let words_url = "https://raw.githubusercontent.com/hermitdave/FrequencyWords/master/content/2018";
 
@@ -338,14 +339,17 @@ impl<F: Fn(SourceDataDownloadStatus)> SourceDataDownloader<F> {
 		word_list_data
 	}
 
-	async fn download_sentence_lists(&mut self) -> Vec<u8> {
+	async fn download_sentence_lists(&self) -> Vec<u8> {
 		let mut sentence_lists = Vec::new();
 		
 		for translation_language in &self.info.translation_languages {
 			(self.status_callback)(SourceDataDownloadStatus::PreparingSentenceFile { 
 				translation_language: translation_language.clone()
 			});
-			sentence_lists.append(&mut self.download_sentence_list(&translation_language).await);
+			let list = self.download_sentence_list(&translation_language).await;
+			// Strip BOM.
+			let list = list.strip_prefix("\u{feff}".as_bytes()).unwrap_or(&list);
+			sentence_lists.extend_from_slice(list);
 		}
 
 		sentence_lists

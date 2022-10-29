@@ -7,24 +7,26 @@
 </head>
 
 <body>
-	<div id="task" style="display: none">
+	<div id="task">
 		<div id="task-header">
 			<h1>Task</h1>
-			<button id="options-button">
+			<button id="options-button" class="ripple overlay-light">
 				<svg viewBox="0 0 48 48"><path fill="currentColor" d="M18.45 45.05 17.4 38.4q-.7-.2-1.55-.7-.85-.5-1.4-.95l-6.2 2.85-5.65-10 5.65-4.1q-.05-.25-.05-.725v-1.5q0-.425.05-.775L2.6 18.3l5.65-9.9 6.3 2.85q.5-.35 1.35-.85.85-.5 1.5-.7l1.05-6.8H29.6l1 6.75q.75.2 1.575.7.825.5 1.375.9l6.3-2.85 5.6 9.9-5.75 4.05q.05.4.125.85.075.45.075.8 0 .35-.075.775-.075.425-.125.775l5.75 4.05-5.7 10-6.2-2.85q-.55.45-1.425.975-.875.525-1.475.675l-1.05 6.65Zm5.5-14.7q2.65 0 4.5-1.85T30.3 24q0-2.6-1.85-4.475-1.85-1.875-4.5-1.875-2.7 0-4.525 1.875Q17.6 21.4 17.6 24q0 2.65 1.825 4.5t4.525 1.85Z"/></svg>
 			</button>
 		</div>
 		<div id="phrase-header">
 			<h2>Phrase</h2>
-			<button id="delete-phrase-button" class="red-button">Delete phrase</button>
-			<button id="delete-word-button" class="red-button">Delete word</button>
+			<button id="delete-phrase-button" class="red-button ripple overlay-red">Delete phrase</button>
+			<button id="delete-word-button" class="red-button ripple overlay-red">Delete word</button>
 		</div>
 		<div id="original-text">
 			<p id="pre-input-word-text">Terve, tämä</p>
 			<input id="word-input" value="on" autofocus>
 			<p id="post-input-word-text">minun testini.</p>
 		</div>
-		<button id="next-button" class="accent-button">Check</button>
+		<button id="next-button" class="accent-button ripple overlay-dark">
+			Check
+		</button>
 		<h2>Translations</h2>
 		<div id="translations">
 			<ul>
@@ -33,7 +35,7 @@
 			</ul>
 		</div>
 	</div>
-	<div id="options">
+	<div id="options" style="display: none">
 		<h2>Options</h2>
 		<div>
 			<h3>Language:</h3>
@@ -54,10 +56,10 @@
 			<h3>Failure weight factor:</h3>
 			<input id="failure-weight-factor-input" type="number">
 		</div>
-		<h2 id="weight-visualization-header">Weight visualization</h2>
+		<!-- <h2 id="weight-visualization-header">Weight visualization</h2>
 		<div>
 			<canvas></canvas>
-		</div>
+		</div> -->
 
 		<button id="back-button" class="ripple overlay-light">Back</button>
 	</div>

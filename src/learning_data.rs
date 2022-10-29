@@ -2,7 +2,7 @@ use crate::options;
 use crate::source_data;
 use crate::util;
 
-use std::{collections::{HashMap, BTreeMap}, io::Write};
+use std::collections::{HashMap, BTreeMap};
 
 use rand::distributions::WeightedIndex;
 use rand::prelude::*;
@@ -35,27 +35,11 @@ impl LearningWord {
 #[derive(Deserialize, Serialize)]
 struct LearningWords(Vec<LearningWord>);
 
-impl LearningWords {
-	// fn load_from_file() -> Option<Self> {
-	// 	eprint!("Loading word save file... ");
-	// 	std::io::stderr().flush().unwrap();
-	// 	if let Ok(mut reader) = csv::ReaderBuilder::new().delimiter(b'\t').from_path(WORD_SAVE_FILE_NAME) {
-	// 		let words = reader.deserialize::<LearningWord>().map(|result| result.expect("the save file should be properly formatted")).collect();
-	// 		eprintln!("Done.");
-	// 		Some(LearningWords(words))
-	// 	}
-	// 	else {
-	// 		None
-	// 	}
-	// }
-	
+impl LearningWords {	
 	fn load_from_source_data(data: &[u8]) -> Self {
-		eprint!("Loading word source data... ");
-		std::io::stderr().flush().unwrap();
-		
 		let mut reader = csv::ReaderBuilder::new().delimiter(b' ').has_headers(false).from_reader(data);
 
-		let mut word_frequency_pairs = reader.deserialize::<(String, u64)>().map(|result| result.unwrap_or_default());
+		let mut word_frequency_pairs = reader.deserialize::<(String, u64)>().filter_map(|result| result.ok());
 		
 		let (first_word, max_frequency) = word_frequency_pairs.next().expect("the parsed word frequency list should not be empty");
 
@@ -63,36 +47,8 @@ impl LearningWords {
 		
 		let words = std::iter::once(LearningWord::from_frequency(first_word, max_frequency, max_frequency)).chain(the_rest).collect();
 		
-		eprintln!("Done.");
-
 		LearningWords(words)
 	}
-
-	// fn load() -> Self {
-	// 	if let Some(result) = Self::load_from_save() {
-	// 		result
-	// 	}
-	// 	else {
-	// 		let list = Self::load_from_frequency_list();
-	// 		list.save();
-	// 		list
-	// 	}
-	// }
-
-	// fn save(&self) {
-	// 	eprint!("Saving word file... ");
-	// 	std::io::stderr().flush().unwrap();
-		
-	// 	util::create_parent_directory_if_nonexistent(WORD_SAVE_FILE_NAME);
-		
-	// 	let mut writer = csv::WriterBuilder::new().delimiter(b'\t')
-	// 		.from_path(WORD_SAVE_FILE_NAME).unwrap();
-	// 	for row in &self.0 {
-	// 		writer.serialize(row).unwrap();
-	// 	}
-
-	// 	eprintln!("Done.");
-	// }
 
 	fn create_weighted_index(&self) -> WeightedIndex<f64> {
 		WeightedIndex::new(self.0.iter().map(|word| word.weight)).unwrap()
@@ -115,23 +71,7 @@ struct LearningSentence {
 struct LearningSentences(HashMap<SentenceId, LearningSentence>);
 
 impl LearningSentences {
-	// fn load_from_save() -> Option<Self> {
-	// 	eprint!("Loading sentence save file... ");
-	// 	std::io::stderr().flush().unwrap();
-
-	// 	if let Ok(file) = std::fs::File::open(SENTENCE_SAVE_FILE_NAME) {
-	// 		if let Ok(map) = bincode::deserialize_from(file) {
-	// 			eprintln!("Done.");
-	// 			return Some(LearningSentences(map));
-	// 		}
-	// 	}
-	// 	None
-	// }
-	
 	fn load_from_source_data(data: &[u8]) -> Self {
-		eprint!("Loading sentence source data... ");
-		std::io::stderr().flush().unwrap();
-
 		#[derive(Debug, Deserialize)]
 		struct SentencePair {
 			id_0: SentenceId,
@@ -142,8 +82,7 @@ impl LearningSentences {
 		
 		let mut reader = csv::ReaderBuilder::new().delimiter(b'\t').has_headers(false).from_reader(data);
 
-		let pairs = reader.deserialize::<SentencePair>()
-			.map(|result| result.expect("the sentence pair source file should be properly formatted"));
+		let pairs = reader.deserialize::<SentencePair>().filter_map(|result| result.ok());
 
 		let mut result = LearningSentences(HashMap::new());
 		
@@ -159,32 +98,8 @@ impl LearningSentences {
 			}
 		}
 
-		eprintln!("Done.");
-
 		result
 	}
-	
-	// fn load() -> Self {
-	// 	if let Some(result) = Self::load_from_save() {
-	// 		result
-	// 	}
-	// 	else {
-	// 		let list = Self::load_from_sentence_pair_source_file();
-	// 		list.save();
-	// 		list
-	// 	}
-	// }
-
-	// fn save(&self) {
-	// 	eprint!("Saving sentence file... ");
-	// 	std::io::stderr().flush().unwrap();
-		
-	// 	util::create_parent_directory_if_nonexistent(SENTENCE_SAVE_FILE_NAME);
-	// 	let file = std::fs::File::create(SENTENCE_SAVE_FILE_NAME).unwrap();
-	// 	bincode::serialize_into(file, &self.0).unwrap();
-
-	// 	eprintln!("Done.");
-	// }
 }
 
 //----------------------------------------------------------------
@@ -212,7 +127,6 @@ pub struct FinishedTask {
 	pub result: TaskResult,
 }
 
-// #[derive(Deserialize, Serialize)]
 pub struct LearningData {
 	words: LearningWords,
 	sentences: LearningSentences,
@@ -258,18 +172,10 @@ impl LearningData {
 		self.word_weighted_index.update_weights(&[(task.word_id, &word.weight)]).expect("should be able to update word weight");
 	}
 	
-	// pub fn load_from_file(language: &source_data::Language) -> Self {
-	// 	let filename = format!("{}/{}", SAVE_DIRECTORY, language.name);
-
-		
-	// 	let words = LearningWords::load_from_file();
-	// 	let word_weighted_index = words.create_weighted_index();
-	// 	Self { 
-	// 		words, 
-	// 		sentences: LearningSentences::load(), 
-	// 		word_weighted_index,
-	// 	}
-	// }
+	fn file_name_for_language(language: &source_data::Language) -> String {
+		format!("{}/{}", SAVE_DIRECTORY, language.name)
+	}
+	
 	pub fn load_from_source_data(source_data: source_data::SourceData) -> Self {
 		let words = LearningWords::load_from_source_data(&source_data.word_list);
 		let word_weighted_index = words.create_weighted_index();
@@ -280,8 +186,23 @@ impl LearningData {
 		}
 	}
 
-	// pub fn save(&mut self) {
-	// 	self.words.save();
-	// 	self.sentences.save();
-	// }
+	pub fn load_from_file(language: &source_data::Language) -> Self {
+		let file = std::fs::File::open(&Self::file_name_for_language(language)).unwrap();
+
+		let words: LearningWords = bincode::deserialize_from(&file).unwrap();
+		let word_weighted_index = words.create_weighted_index();
+
+		Self { 
+			words, 
+			sentences: bincode::deserialize_from(&file).unwrap(),
+			word_weighted_index,
+		}
+	}
+
+	pub fn save_to_file(&mut self, language: &source_data::Language) {
+		util::create_directory_if_nonexistent(SAVE_DIRECTORY);
+		let file = std::fs::File::create(format!("{}/{}", SAVE_DIRECTORY, language.name)).unwrap();
+		bincode::serialize_into(&file, &self.words).unwrap();
+		bincode::serialize_into(&file, &self.sentences).unwrap();
+	}
 }

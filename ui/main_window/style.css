@@ -3,16 +3,18 @@ input::placeholder {
     color: rgba(255, 50, 140, 0.8);
 }
 
-h2 {
-    text-align: center;
-    width: 100%;
+h1 {
+    text-align: left;
+    margin: 0;
+    width: auto;
+    flex-grow: 1;
 }
 
 #task {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    min-width: 40em;
+    min-width: 20em;
     width: 100%;
 }
 
@@ -21,53 +23,45 @@ h2 {
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin-bottom: 32px;
-}
-#task-header p {
-    font-size: 1.2em;
-    flex-grow: 1;
-    margin: 0;
+    margin-bottom: 1.5em;
 }
 
 #options-button {
-    border: none;
-    /* border: 1px solid var(--accent); */
-    border-radius: 50%;
-    padding: 4px;
-}
-#options-button:hover {
-    background-color: #aaa1;
-}
-#options-button:active {
-    background-color: #aaa2;
-}
-#options-button svg {
-    width: 1.5em;
-    height: 1.5em;
+    background-color: transparent;
     color: #aaa;
+    border: none;
+    border-radius: 50%;
+    padding: 0.2em;
+    margin: 0;
+    margin-right: 0.1em;
+    box-shadow: none;
+}
+#options-button > svg {
+    width: 2em;
+    height: 2em;
 }
 
 #phrase-header {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 12px;
+    gap: 0.5em;
     width: 100%;
     margin-bottom: 24px;
 }
-#phrase-header p {
+#phrase-header h2 {
     flex-grow: 1;
     margin: 0;
 }
 #phrase-header button {
-    font-size: 0.5em;
-    padding: 5px 10px;
+    font-size: 0.6em;
 }
 
 #original-text {
     align-self: center;
     text-align: center;
-    padding: 0px 16px;
+    padding: 0 1em;
+    font-size: 1.4em;
 }
 #original-text > p {
     display: inline;
@@ -75,12 +69,13 @@ h2 {
 
 #next-button {
     align-self: center;
-    margin-top: 20px;
-    margin-bottom: 16px;
+    margin-top: 1.5em;
+    margin-bottom: 1em;
 }
 
 #translations {
-    padding: 0px 16px;
+    padding: 0 1em;
+    font-size: 1.4em;
 }
 
 ul {
@@ -102,6 +97,10 @@ li + li {
 }
 #options h3 {
     margin-bottom: 0;
+}
+#options h2 {
+    text-align: center;
+    width: 100%;
 }
 
 #options > div {

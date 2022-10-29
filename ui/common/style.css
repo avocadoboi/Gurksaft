@@ -101,7 +101,7 @@ input {
     outline: none;
     border: none;
     border-bottom: 2px solid var(--accent);
-    width: 5em;
+    width: 3em;
 
     font-family: roboto;
     font-size: 1em;
