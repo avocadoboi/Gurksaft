@@ -3,17 +3,12 @@ const invoke = (window as any).__TAURI__.invoke;
 // const emit = (window as any).__TAURI__.event.emit;
 const listen = (window as any).__TAURI__.event.listen;
 
-type Language = {
-	name: string,
-	id: string,
-};
-
-invoke("get_language_list", {}).then((languages: Language[]) => {
+invoke("get_language_list", {}).then((languages: string[]) => {
 	for (const dropdown of document.getElementsByClassName("language-dropdown")) {
 		for (const language of languages) {
 			const option = document.createElement("option");
-			option.value = language.name;
-			option.innerText = language.name;
+			option.value = language;
+			option.innerText = language;
 			dropdown.appendChild(option);
 		}
 	}

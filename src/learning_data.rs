@@ -12,6 +12,7 @@ use serde::{Serialize, Deserialize};
 //----------------------------------------------------------------
 
 const SAVE_DIRECTORY: &str = "save_data/";
+const MAX_SENTENCE_LEN: usize = 100;
 
 //----------------------------------------------------------------
 
@@ -81,8 +82,10 @@ impl LearningSentences {
 		}
 		
 		let mut reader = csv::ReaderBuilder::new().delimiter(b'\t').has_headers(false).from_reader(data);
-
-		let pairs = reader.deserialize::<SentencePair>().filter_map(|result| result.ok());
+		
+		let pairs = reader.deserialize::<SentencePair>()
+			.filter_map(|result| result.ok())
+			.filter(|sentence| sentence.original.len() < MAX_SENTENCE_LEN);
 
 		let mut result = LearningSentences(HashMap::new());
 		

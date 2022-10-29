@@ -97,17 +97,19 @@ li + li {
 }
 #options h3 {
     margin-bottom: 0;
+    margin-right: 0.5em;
 }
 #options h2 {
     text-align: center;
     width: 100%;
+    margin-bottom: 1em;
 }
 
 #options > div {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 1em;
+    gap: 0.4em;
     margin-bottom: 1em;
 }
 
@@ -119,7 +121,7 @@ li + li {
     background-color: transparent;
     color: var(--secondary);
     border-radius: 50%;
-    border: 1px solid var(--secondary);
+    border: 2px solid var(--secondary);
     padding: 0.1em;
 }
 #add-language-button svg {
@@ -133,4 +135,5 @@ li + li {
 
 #back-button {
     align-self: center;
+    margin-top: 0.5em;
 }

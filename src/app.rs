@@ -36,40 +36,96 @@ impl fmt::Display for WindowLabel {
 	}
 }
 
+//----------------------------------------------------------------
+
 #[tauri::command]
-fn next_task(app: tauri::State<AppState>) -> learning_data::LearningTask {
-	app.learning_data.lock().unwrap().next_task()
+fn next_task(state: tauri::State<AppState>) -> learning_data::LearningTask {
+	state.learning_data.lock().unwrap().next_task()
 }
 
 #[tauri::command]
-fn finish_task(app: tauri::State<AppState>, task: learning_data::FinishedTask) {
-	app.learning_data.lock().unwrap().finish_task(task, app.options.lock().unwrap().weight_factors)
+fn finish_task(state: tauri::State<AppState>, task: learning_data::FinishedTask) {
+	state.learning_data.lock().unwrap().finish_task(task, state.options.lock().unwrap().weight_factors)
 }
 
 #[tauri::command]
-fn get_weight_factors(app: tauri::State<AppState>) -> options::WeightFactors {
-	app.options.lock().unwrap().weight_factors
+fn get_weight_factors(state: tauri::State<AppState>) -> options::WeightFactors {
+	state.options.lock().unwrap().weight_factors
 }
 
 #[tauri::command]
-fn set_success_weight_factor(app: tauri::State<AppState>, factor: f64) {
-	app.options.lock().unwrap().weight_factors.succeeded = factor;
+fn set_success_weight_factor(state: tauri::State<AppState>, factor: f64) {
+	state.options.lock().unwrap().weight_factors.succeeded = factor;
 }
 #[tauri::command]
-fn set_failure_weight_factor(app: tauri::State<AppState>, factor: f64) {
-	app.options.lock().unwrap().weight_factors.failed = factor;
+fn set_failure_weight_factor(state: tauri::State<AppState>, factor: f64) {
+	state.options.lock().unwrap().weight_factors.failed = factor;
 }
 
 #[tauri::command]
-fn get_language_list() -> &'static [source_data::Language] {
-	&source_data::LANGUAGES
+fn get_language_list() -> Vec<&'static str> {
+	source_data::LANGUAGES.iter().map(|language| language.name).collect()
 }
 
-fn create_main_window(app: tauri::AppHandle) {
-	tauri::WindowBuilder::new(&app, WindowLabel::MainWindow.to_string(), tauri::WindowUrl::App("main_window/index.html".into()))
+#[tauri::command]
+fn get_saved_language_list(state: tauri::State<AppState>) -> Vec<&str> {
+	state.options.lock().unwrap().saved_languages.iter().map(|&i| source_data::LANGUAGES[i].name).collect()
+}
+
+#[tauri::command]
+fn get_current_language(state: tauri::State<AppState>) -> &str {
+	source_data::LANGUAGES[state.options.lock().unwrap().language_index].name
+}
+
+#[tauri::command]
+fn set_current_language(state: tauri::State<AppState>, language_name: String) {
+	let mut options = state.options.lock().unwrap();
+	
+	if let Some(&language_index) = options.saved_languages.iter().find(|&&i| source_data::LANGUAGES[i].name == language_name) {
+		let mut learning_data = state.learning_data.lock().unwrap();
+		learning_data.save_to_file(&source_data::LANGUAGES[options.language_index]);
+		options.language_index = language_index;
+
+		*learning_data = LearningData::load_from_file(&source_data::LANGUAGES[language_index]);
+
+	}
+
+}
+
+fn create_main_window(app: &tauri::AppHandle) {
+	tauri::WindowBuilder::new(app, WindowLabel::MainWindow.to_string(), tauri::WindowUrl::App("main_window/index.html".into()))
 		.center()
 		.inner_size(700., 600.)
 		.title("Language learning tool").build().unwrap();
+}
+fn create_add_language_window(app: &tauri::AppHandle) {
+	tauri::WindowBuilder::new(app, WindowLabel::AddLanguage.to_string(), tauri::WindowUrl::App("add_language/index.html".into()))
+		.center()
+		.inner_size(700., 450.)
+		.title("Add language")
+		.build().unwrap();
+}
+
+fn add_new_language_data(app: &tauri::AppHandle, source_data: SourceData) {
+	if let Some(state) = app.try_state::<AppState>() {
+		let mut options = state.options.lock().unwrap();
+		let mut learning_data = state.learning_data.lock().unwrap();
+
+		learning_data.save_to_file(&source_data::LANGUAGES[options.language_index]);
+		options.language_index = source_data.language_index;
+
+		if let Err(i) = options.saved_languages.binary_search(&source_data.language_index) {
+			options.saved_languages.insert(i, source_data.language_index);
+		}
+		
+		*learning_data = LearningData::load_from_source_data(source_data);
+	}
+	else {
+		app.manage(AppState {
+			options: Mutex::new(options::Options::new(source_data.language_index)),
+			learning_data: Mutex::new(LearningData::load_from_source_data(source_data))
+		});
+	}
 }
 
 #[tauri::command]
@@ -80,13 +136,17 @@ async fn download_language_data(app: tauri::AppHandle, window: tauri::Window, in
 
 	window.emit("download_status", &source_data::SourceDataDownloadStatus::Loading).unwrap();
 
-	app.manage(AppState {
-		options: Mutex::new(options::Options::new(source_data.language_index)),
-		learning_data: Mutex::new(LearningData::load_from_source_data(source_data))
-	});
+	add_new_language_data(&app, source_data);
 
-	create_main_window(app);
+	create_main_window(&app);
 
+	window.close().unwrap();
+}
+
+#[tauri::command]
+fn add_language(app: tauri::AppHandle, window: tauri::Window) {
+	create_add_language_window(&app);
+	
 	window.close().unwrap();
 }
 
@@ -97,14 +157,10 @@ fn start_app(app: &tauri::App) {
 			options: Mutex::new(options),
 			learning_data
 		});
-		create_main_window(app.handle());
+		create_main_window(&app.handle());
 	}
 	else {
-		tauri::WindowBuilder::new(app, WindowLabel::AddLanguage.to_string(), tauri::WindowUrl::App("add_language/index.html".into()))
-			.center()
-			.inner_size(700., 450.)
-			.title("Add language")
-			.build().unwrap();
+		create_add_language_window(&app.handle());
 	}
 }
 
@@ -125,11 +181,15 @@ pub fn run() {
 			download_language_data,
 			next_task, 
 			finish_task,
+			get_saved_language_list,
+			get_current_language,
+			set_current_language,
+			add_language,
 			get_weight_factors,
 			set_success_weight_factor,
 			set_failure_weight_factor
 		])
 		.on_window_event(handle_window_event)
 		.run(tauri::generate_context!())
-		.expect("error while running tauri application");
+		.unwrap();
 }

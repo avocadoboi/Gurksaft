@@ -37,7 +37,7 @@ const word_input = document.getElementById("word-input")! as HTMLInputElement;
 const next_button = document.getElementById("next-button")! as HTMLButtonElement;
 
 function set_button_text(button: HTMLButtonElement, text: string): void {
-	next_button.firstChild!.textContent = text;
+	button.firstChild!.textContent = text;
 }
 
 function next_task() {
@@ -164,6 +164,33 @@ document.getElementById("options-button")?.addEventListener("click", () => {
 document.getElementById("back-button")?.addEventListener("click", () => {
 	task_page.style.display = "flex";
 	options_page.style.display = "none";
+});
+
+//----------------------------------------------------------------
+
+const language_dropdown = document.getElementById("language-dropdown")! as HTMLSelectElement;
+
+invoke("get_saved_language_list", {}).then((languages: string[]) => {
+	for (const language of languages) {
+		const option = document.createElement("option");
+		option.value = language;
+		option.innerText = language;
+		language_dropdown.appendChild(option);
+	}
+	invoke("get_current_language", {}).then((language: string) => {
+		language_dropdown.value = language;
+	});
+});
+
+
+document.getElementById("add-language-button")?.addEventListener("click", () => {
+	invoke("add_language", {});
+});
+
+language_dropdown.addEventListener("change", () => {
+	invoke("set_current_language", { languageName: language_dropdown.value }).then(() => {
+		next_task();
+	});
 });
 
 //----------------------------------------------------------------

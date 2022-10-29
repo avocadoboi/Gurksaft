@@ -19,7 +19,7 @@ const invoke = window.__TAURI__.invoke;
 const word_input = document.getElementById("word-input");
 const next_button = document.getElementById("next-button");
 function set_button_text(button, text) {
-    next_button.firstChild.textContent = text;
+    button.firstChild.textContent = text;
 }
 function next_task() {
     const pre_input_word_text = document.getElementById("pre-input-word-text");
@@ -115,6 +115,27 @@ document.getElementById("options-button")?.addEventListener("click", () => {
 document.getElementById("back-button")?.addEventListener("click", () => {
     task_page.style.display = "flex";
     options_page.style.display = "none";
+});
+//----------------------------------------------------------------
+const language_dropdown = document.getElementById("language-dropdown");
+invoke("get_saved_language_list", {}).then((languages) => {
+    for (const language of languages) {
+        const option = document.createElement("option");
+        option.value = language;
+        option.innerText = language;
+        language_dropdown.appendChild(option);
+    }
+    invoke("get_current_language", {}).then((language) => {
+        language_dropdown.value = language;
+    });
+});
+document.getElementById("add-language-button")?.addEventListener("click", () => {
+    invoke("add_language", {});
+});
+language_dropdown.addEventListener("change", () => {
+    invoke("set_current_language", { languageName: language_dropdown.value }).then(() => {
+        next_task();
+    });
 });
 const success_weight_factor_input = document.getElementById("success-weight-factor-input");
 const failure_weight_factor_input = document.getElementById("failure-weight-factor-input");

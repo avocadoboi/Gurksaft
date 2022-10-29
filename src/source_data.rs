@@ -5,237 +5,297 @@ use serde::{Deserialize, Serialize};
 #[derive(Deserialize, Serialize)]
 pub struct Language {
 	pub name: &'static str,
-	pub id: &'static str,
+	// Two-letter ISO 639-1 language code.
+	pub id_2: &'static str,
+	// Three-letter ISO 639-2 language code.
+	pub id_3: &'static str,
 }
 
 pub const LANGUAGES: &[Language] = &[
 	Language {
 		name: "Afrikaans",
-		id: "af",
+		id_2: "af",
+		id_3: "afr",
 	},
 	Language {
 		name: "Albanian",
-		id: "sq",
+		id_2: "sq",
+		id_3: "sqi",
 	},
 	Language {
 		name: "Arabic",
-		id: "ar",
+		id_2: "ar",
+		id_3: "ara",
 	},
 	Language {
 		name: "Armenian",
-		id: "hy",
+		id_2: "hy",
+		id_3: "hye",
 	},
 	Language {
 		name: "Basque",
-		id: "eu",
+		id_2: "eu",
+		id_3: "eus",
 	},
 	Language {
 		name: "Bengali",
-		id: "bn",
+		id_2: "bn",
+		id_3: "ben",
 	},
 	Language {
 		name: "Bosnian",
-		id: "bs",
+		id_2: "bs",
+		id_3: "bos",
 	},
 	Language {
 		name: "Breton",
-		id: "br",
+		id_2: "br",
+		id_3: "bre",
 	},
 	Language {
 		name: "Bulgarian",
-		id: "bg",
+		id_2: "bg",
+		id_3: "bul",
 	},
 	Language {
 		name: "Catalan",
-		id: "ca",
+		id_2: "ca",
+		id_3: "cat",
 	},
 	Language {
 		name: "Croatian",
-		id: "hr",
+		id_2: "hr",
+		id_3: "hrv",
 	},
 	Language {
 		name: "Czech",
-		id: "cs",
+		id_2: "cs",
+		id_3: "ces",
 	},
 	Language {
 		name: "Danish",
-		id: "da",
+		id_2: "da",
+		id_3: "dan",
 	},
 	Language {
 		name: "Dutch",
-		id: "nl",
+		id_2: "nl",
+		id_3: "nld",
 	},
 	Language {
 		name: "English",
-		id: "en",
+		id_2: "en",
+		id_3: "eng",
 	},
 	Language {
 		name: "Esperanto",
-		id: "eo",
+		id_2: "eo",
+		id_3: "epo",
 	},
 	Language {
 		name: "Estonian",
-		id: "et",
+		id_2: "et",
+		id_3: "est",
 	},
 	Language {
 		name: "Finnish",
-		id: "fi",
+		id_2: "fi",
+		id_3: "fin",
 	},
 	Language {
 		name: "French",
-		id: "fr",
+		id_2: "fr",
+		id_3: "fra",
 	},
 	Language {
 		name: "Galician",
-		id: "gl",
+		id_2: "gl",
+		id_3: "glg",
 	},
 	Language {
 		name: "Georgian",
-		id: "ka",
+		id_2: "ka",
+		id_3: "kat",
 	},
 	Language {
 		name: "German",
-		id: "de",
+		id_2: "de",
+		id_3: "deu",
 	},
 	Language {
 		name: "Greek",
-		id: "el",
+		id_2: "el",
+		id_3: "ell",
 	},
 	Language {
 		name: "Hebrew",
-		id: "he",
+		id_2: "he",
+		id_3: "heb",
 	},
 	Language {
 		name: "Hindi",
-		id: "hi",
+		id_2: "hi",
+		id_3: "hin",
 	},
 	Language {
 		name: "Hungarian",
-		id: "hu",
+		id_2: "hu",
+		id_3: "hun",
 	},
 	Language {
 		name: "Icelandic",
-		id: "is",
+		id_2: "is",
+		id_3: "isl",
 	},
 	Language {
 		name: "Indonesian",
-		id: "id",
+		id_2: "id",
+		id_3: "ind",
 	},
 	Language {
 		name: "Italian",
-		id: "it",
+		id_2: "it",
+		id_3: "ita",
 	},
 	Language {
 		name: "Japanese",
-		id: "ja",
+		id_2: "ja",
+		id_3: "jpn",
 	},
 	Language {
 		name: "Kazakh",
-		id: "kk",
+		id_2: "kk",
+		id_3: "kaz",
 	},
 	Language {
 		name: "Korean",
-		id: "ko",
+		id_2: "ko",
+		id_3: "kor",
 	},
 	Language {
 		name: "Latvian",
-		id: "lv",
+		id_2: "lv",
+		id_3: "lav",
 	},
 	Language {
 		name: "Lithuanian",
-		id: "lt",
+		id_2: "lt",
+		id_3: "lit",
 	},
 	Language {
 		name: "Macedonian",
-		id: "mk",
+		id_2: "mk",
+		id_3: "mkd",
 	},
 	Language {
 		name: "Malay",
-		id: "ms",
+		id_2: "ms",
+		id_3: "msa",
 	},
 	Language {
 		name: "Malayalam",
-		id: "ml",
+		id_2: "ml",
+		id_3: "mal",
 	},
 	Language {
 		name: "Norwegian",
-		id: "no",
+		id_2: "no",
+		id_3: "nor",
 	},
 	Language {
 		name: "Persian",
-		id: "fa",
+		id_2: "fa",
+		id_3: "fas",
 	},
 	Language {
 		name: "Polish",
-		id: "pl",
+		id_2: "pl",
+		id_3: "pol",
 	},
 	Language {
 		name: "Portuguese",
-		id: "pt",
+		id_2: "pt",
+		id_3: "por",
 	},
 	Language {
 		name: "Romanian",
-		id: "ro",
+		id_2: "ro",
+		id_3: "ron",
 	},
 	Language {
 		name: "Russian",
-		id: "ru",
+		id_2: "ru",
+		id_3: "rus",
 	},
 	Language {
 		name: "Serbian",
-		id: "sr",
+		id_2: "sr",
+		id_3: "srp",
 	},
 	Language {
 		name: "Sinhala",
-		id: "si",
+		id_2: "si",
+		id_3: "sin",
 	},
 	Language {
 		name: "Slovak",
-		id: "sk",
+		id_2: "sk",
+		id_3: "slk",
 	},
 	Language {
 		name: "Slovenian",
-		id: "sl",
+		id_2: "sl",
+		id_3: "slv",
 	},
 	Language {
 		name: "Spanish",
-		id: "es",
+		id_2: "es",
+		id_3: "spa",
 	},
 	Language {
 		name: "Swedish",
-		id: "sv",
+		id_2: "sv",
+		id_3: "swe",
 	},
 	Language {
 		name: "Tagalog",
-		id: "tl",
+		id_2: "tl",
+		id_3: "tgl",
 	},
 	Language {
 		name: "Tamil",
-		id: "ta",
+		id_2: "ta",
+		id_3: "tam",
 	},
 	Language {
 		name: "Telugu",
-		id: "te",
+		id_2: "te",
+		id_3: "tel",
 	},
 	Language {
 		name: "Thai",
-		id: "th",
+		id_2: "th",
+		id_3: "tha",
 	},
 	Language {
 		name: "Turkish",
-		id: "tr",
+		id_2: "tr",
+		id_3: "tur",
 	},
 	Language {
 		name: "Ukranian",
-		id: "uk",
+		id_2: "uk",
+		id_3: "ukr",
 	},
 	Language {
 		name: "Urdu",
-		id: "ur",
+		id_2: "ur",
+		id_3: "urd",
 	},
 	Language {
 		name: "Vietnamese",
-		id: "vi",
+		id_2: "vi",
+		id_3: "vie",
 	},
 ];
 
@@ -273,6 +333,7 @@ pub enum SourceDataDownloadStatus {
 
 struct SourceDataDownloader<F: Fn(SourceDataDownloadStatus)> {
 	client: reqwest::Client,
+	target_language_index: usize,
 	info: SourceDataInfo,
 	status_callback: F
 }
@@ -281,37 +342,35 @@ impl<F: Fn(SourceDataDownloadStatus)> SourceDataDownloader<F> {
 	fn new(info: SourceDataInfo, status_callback: F) -> Self {
 		SourceDataDownloader {
 			client: reqwest::Client::new(),
+			target_language_index: LANGUAGES.iter().position(|language| language.name == info.target_language).unwrap(),
 			info,
 			status_callback
 		}
 	}
 
 	async fn download(&self) -> SourceData {
-		let language_index = LANGUAGES.iter().position(|language| language.name == self.info.target_language).unwrap();
-
-		let word_list = self.download_words(language_index).await;
+		let word_list = self.download_words().await;
 		let sentence_list = self.download_sentence_lists().await;
 
 		SourceData {
-			language_index,
+			language_index: self.target_language_index,
 			word_list,
 			sentence_list,
 		}
 	}
 	
-	async fn download_words(&self, language_index: usize) -> Vec<u8> {
-		let language = &LANGUAGES[language_index];
+	async fn download_words(&self) -> Vec<u8> {
+		let language = &LANGUAGES[self.target_language_index];
 
 		let words_url = "https://raw.githubusercontent.com/hermitdave/FrequencyWords/master/content/2018";
 
-		let response = self.client.get(format!("{0}/{1}/{1}_50k.txt", words_url, language.id))
-			.send().await;
+		let response = self.client.get(format!("{0}/{1}/{1}_50k.txt", words_url, language.id_2)).send().await;
 
 		let mut response = 
 			if let Ok(response) = response && response.status().is_success() { 
 				response
 			} else {
-				self.client.get(format!("{0}/{1}/{1}_full.txt", words_url, language.id)).send().await.unwrap()
+				self.client.get(format!("{0}/{1}/{1}_full.txt", words_url, language.id_2)).send().await.unwrap()
 			};
 
 		let length = response.content_length();
@@ -342,11 +401,14 @@ impl<F: Fn(SourceDataDownloadStatus)> SourceDataDownloader<F> {
 	async fn download_sentence_lists(&self) -> Vec<u8> {
 		let mut sentence_lists = Vec::new();
 		
-		for translation_language in &self.info.translation_languages {
+		let translation_languages = self.info.translation_languages.iter()
+			.map(|name| LANGUAGES.iter().find(|language| language.name == name).unwrap());
+		
+		for translation_language in translation_languages {
 			(self.status_callback)(SourceDataDownloadStatus::PreparingSentenceFile { 
-				translation_language: translation_language.clone()
+				translation_language: translation_language.name.to_owned()
 			});
-			let list = self.download_sentence_list(&translation_language).await;
+			let list = self.download_sentence_list(translation_language).await;
 			// Strip BOM.
 			let list = list.strip_prefix("\u{feff}".as_bytes()).unwrap_or(&list);
 			sentence_lists.extend_from_slice(list);
@@ -355,7 +417,7 @@ impl<F: Fn(SourceDataDownloadStatus)> SourceDataDownloader<F> {
 		sentence_lists
 	}
 
-	async fn download_sentence_list(&self, translation_language: &str) -> Vec<u8> {
+	async fn download_sentence_list(&self, translation_language: &Language) -> Vec<u8> {
 		let list_id = self.prepare_sentence_list(translation_language).await;
 		
 		let filename = self.wait_for_sentence_list_filename(list_id).await;
@@ -378,7 +440,7 @@ impl<F: Fn(SourceDataDownloadStatus)> SourceDataDownloader<F> {
 			sentence_list_data.extend_from_slice(&chunk);
 
 			(self.status_callback)(SourceDataDownloadStatus::DownlodingSentenceFile {
-				translation_language: translation_language.to_owned(),
+				translation_language: translation_language.name.to_owned(),
 				progress: 
 					if let Some(length) = length {
 						sentence_list_data.len() as f64 / length as f64
@@ -391,7 +453,7 @@ impl<F: Fn(SourceDataDownloadStatus)> SourceDataDownloader<F> {
 		sentence_list_data
 	}
 
-	async fn prepare_sentence_list(&self, translation_language: &str) -> i64 {
+	async fn prepare_sentence_list(&self, translation_language: &Language) -> i64 {
 		let response = self.client.post("https://tatoeba.org/en/exports/add")
 		    .form(&[
 		        ("fields[]", "id"),
@@ -399,8 +461,8 @@ impl<F: Fn(SourceDataDownloadStatus)> SourceDataDownloader<F> {
 		        ("fields[]", "trans_id"),
 		        ("fields[]", "trans_text"),
 		        ("format", "tsv"),
-		        ("from", &self.info.target_language[..3].to_lowercase()),
-		        ("to", &translation_language[..3].to_lowercase()),
+		        ("from", &LANGUAGES[self.target_language_index].id_3),
+		        ("to", &translation_language.id_3),
 		        ("type", "pairs")
 		    ])
 		    .header("cookie", "csrfToken=a")

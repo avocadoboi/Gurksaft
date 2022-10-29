@@ -6,8 +6,8 @@ invoke("get_language_list", {}).then((languages) => {
     for (const dropdown of document.getElementsByClassName("language-dropdown")) {
         for (const language of languages) {
             const option = document.createElement("option");
-            option.value = language.name;
-            option.innerText = language.name;
+            option.value = language;
+            option.innerText = language;
             dropdown.appendChild(option);
         }
     }
