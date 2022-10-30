@@ -214,5 +214,3 @@ success_weight_factor_input.addEventListener("change", () => {
 failure_weight_factor_input.addEventListener("change", () => {
 	invoke("set_failure_weight_factor", { factor: failure_weight_factor_input.value });
 });
-
-

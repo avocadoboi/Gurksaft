@@ -74,6 +74,7 @@ h3 {
 }
 
 #download-progress-text {
-    font-size: 1em;
+    font-size: 1.5em;
+    line-height: 1.5em;
     margin: 0;
 }

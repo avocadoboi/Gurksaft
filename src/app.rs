@@ -19,7 +19,7 @@ impl AppState {
 	fn save(&self) {
 		let options = self.options.lock().unwrap();
 		options.save();
-		self.learning_data.lock().unwrap().save_to_file(&source_data::LANGUAGES[options.language_index])
+		self.learning_data.lock().unwrap().save_words_to_file(options.language_index)
 	}
 }
 
@@ -78,18 +78,18 @@ fn get_current_language(state: tauri::State<AppState>) -> &str {
 }
 
 #[tauri::command]
-fn set_current_language(state: tauri::State<AppState>, language_name: String) {
+async fn set_current_language(app: tauri::AppHandle, language_name: String) {
+	let state = app.state::<AppState>();
+	
 	let mut options = state.options.lock().unwrap();
 	
 	if let Some(&language_index) = options.saved_languages.iter().find(|&&i| source_data::LANGUAGES[i].name == language_name) {
 		let mut learning_data = state.learning_data.lock().unwrap();
-		learning_data.save_to_file(&source_data::LANGUAGES[options.language_index]);
+		learning_data.save_words_to_file(options.language_index);
 		options.language_index = language_index;
 
-		*learning_data = LearningData::load_from_file(&source_data::LANGUAGES[language_index]);
-
+		*learning_data = LearningData::load_from_file(language_index);
 	}
-
 }
 
 fn create_main_window(app: &tauri::AppHandle) {
@@ -111,19 +111,25 @@ fn add_new_language_data(app: &tauri::AppHandle, source_data: SourceData) {
 		let mut options = state.options.lock().unwrap();
 		let mut learning_data = state.learning_data.lock().unwrap();
 
-		learning_data.save_to_file(&source_data::LANGUAGES[options.language_index]);
+		learning_data.save_words_to_file(options.language_index);
 		options.language_index = source_data.language_index;
 
 		if let Err(i) = options.saved_languages.binary_search(&source_data.language_index) {
 			options.saved_languages.insert(i, source_data.language_index);
 		}
 		
-		*learning_data = LearningData::load_from_source_data(source_data);
+		*learning_data = LearningData::load_from_source_data(&source_data);
+		// Save sentences immediately.
+		// Sentences are saved only when necessary while words and their weights are saved every time the app closes.
+		learning_data.save_sentences_to_file(options.language_index);
 	}
 	else {
+		let learning_data = LearningData::load_from_source_data(&source_data);
+		learning_data.save_sentences_to_file(source_data.language_index);
+
 		app.manage(AppState {
 			options: Mutex::new(options::Options::new(source_data.language_index)),
-			learning_data: Mutex::new(LearningData::load_from_source_data(source_data))
+			learning_data: Mutex::new(learning_data)
 		});
 	}
 }
@@ -152,7 +158,7 @@ fn add_language(app: tauri::AppHandle, window: tauri::Window) {
 
 fn start_app(app: &tauri::App) {
 	if let Some(options) = Options::load() {
-		let learning_data = Mutex::new(LearningData::load_from_file(&source_data::LANGUAGES[options.language_index]));
+		let learning_data = Mutex::new(LearningData::load_from_file(options.language_index));
 		app.manage(AppState {
 			options: Mutex::new(options),
 			learning_data
@@ -166,8 +172,7 @@ fn start_app(app: &tauri::App) {
 
 fn handle_window_event(event: tauri::GlobalWindowEvent) {
 	if let tauri::WindowEvent::Destroyed = event.event() {
-		if event.window().label() == WindowLabel::MainWindow.to_string() {
-			let app: tauri::State<AppState> = event.window().state();
+		if let Some(app) = event.window().try_state::<AppState>() {
 			app.save();
 		}
 	}

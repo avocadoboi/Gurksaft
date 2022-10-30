@@ -2,7 +2,8 @@ use crate::options;
 use crate::source_data;
 use crate::util;
 
-use std::collections::{HashMap, BTreeMap};
+use std::collections::HashMap;
+use std::fs;
 
 use rand::distributions::WeightedIndex;
 use rand::prelude::*;
@@ -60,10 +61,16 @@ impl LearningWords {
 
 pub type SentenceId = u32;
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Deserialize, Serialize)]
+struct Translation {
+	id: SentenceId,
+	text: String,
+}
+
+#[derive(Deserialize, Serialize)]
 struct LearningSentence {
 	original: String,
-	translations: BTreeMap<SentenceId, String>,
+	translations: Vec<Translation>,
 }
 
 //----------------------------------------------------------------
@@ -87,16 +94,17 @@ impl LearningSentences {
 			.filter_map(|result| result.ok())
 			.filter(|sentence| sentence.original.len() < MAX_SENTENCE_LEN);
 
-		let mut result = LearningSentences(HashMap::new());
+		let mut result = LearningSentences(HashMap::with_capacity(100_000));
 		
 		for pair in pairs {
+			let translation = Translation { id: pair.id_1, text: pair.translation };
 			if let Some(sentence) = result.0.get_mut(&pair.id_0) {
-				sentence.translations.insert(pair.id_1, pair.translation);
+				sentence.translations.push(translation);
 			}
 			else {
 				result.0.insert(pair.id_0, LearningSentence {
 					original: pair.original,
-					translations: BTreeMap::from([(pair.id_1, pair.translation)]),
+					translations: vec![translation],
 				});
 			}
 		}
@@ -132,8 +140,8 @@ pub struct FinishedTask {
 
 pub struct LearningData {
 	words: LearningWords,
-	sentences: LearningSentences,
 	word_weighted_index: WeightedIndex<f64>,
+	sentences: LearningSentences,
 }
 
 impl LearningData {	
@@ -161,7 +169,7 @@ impl LearningData {
 				word: word.word.clone(),
 				word_pos: util::find_word_position(&sentence.original, &word.word).expect("the word should exist in the chosen sentence"),
 				sentence: sentence.original.clone(),
-				translations: sentence.translations.iter().map(|(_id, sentence)| sentence.clone()).collect(),
+				translations: sentence.translations.iter().map(|sentence| sentence.text.clone()).collect(),
 			}
 		}
 	}
@@ -175,37 +183,45 @@ impl LearningData {
 		self.word_weighted_index.update_weights(&[(task.word_id, &word.weight)]).expect("should be able to update word weight");
 	}
 	
-	fn file_name_for_language(language: &source_data::Language) -> String {
-		format!("{}/{}", SAVE_DIRECTORY, language.name)
-	}
-	
-	pub fn load_from_source_data(source_data: source_data::SourceData) -> Self {
+	pub fn load_from_source_data(source_data: &source_data::SourceData) -> Self {
 		let words = LearningWords::load_from_source_data(&source_data.word_list);
 		let word_weighted_index = words.create_weighted_index();
 		Self { 
 			words, 
-			sentences: LearningSentences::load_from_source_data(&source_data.sentence_list),
 			word_weighted_index,
+			sentences: LearningSentences::load_from_source_data(&source_data.sentence_list),
 		}
 	}
 
-	pub fn load_from_file(language: &source_data::Language) -> Self {
-		let file = std::fs::File::open(&Self::file_name_for_language(language)).unwrap();
-
-		let words: LearningWords = bincode::deserialize_from(&file).unwrap();
+	fn words_file_name(language_index: usize) -> String {
+		format!("{}/{}_words", SAVE_DIRECTORY, source_data::LANGUAGES[language_index].name)
+	}
+	fn sentences_file_name(language_index: usize) -> String {
+		format!("{}/{}_sentences", SAVE_DIRECTORY, source_data::LANGUAGES[language_index].name)
+	}
+	
+	pub fn load_from_file(language_index: usize) -> Self {
+		let words: LearningWords = bincode::deserialize(&fs::read(Self::words_file_name(language_index)).unwrap()).unwrap();
 		let word_weighted_index = words.create_weighted_index();
-
 		Self { 
 			words, 
-			sentences: bincode::deserialize_from(&file).unwrap(),
 			word_weighted_index,
+			sentences: bincode::deserialize(&fs::read(Self::sentences_file_name(language_index)).unwrap()).unwrap(),
 		}
 	}
 
-	pub fn save_to_file(&mut self, language: &source_data::Language) {
+	pub fn save_sentences_to_file(&self, language_index: usize) {
 		util::create_directory_if_nonexistent(SAVE_DIRECTORY);
-		let file = std::fs::File::create(format!("{}/{}", SAVE_DIRECTORY, language.name)).unwrap();
-		bincode::serialize_into(&file, &self.words).unwrap();
-		bincode::serialize_into(&file, &self.sentences).unwrap();
+		fs::write(
+			Self::sentences_file_name(language_index), 
+			bincode::serialize(&self.sentences).unwrap()
+		).unwrap();
+	}
+	pub fn save_words_to_file(&self, language_index: usize) {
+		util::create_directory_if_nonexistent(SAVE_DIRECTORY);
+		fs::write(
+			Self::words_file_name(language_index), 
+			bincode::serialize(&self.words).unwrap()
+		).unwrap();
 	}
 }

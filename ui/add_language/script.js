@@ -98,7 +98,7 @@ listen("download_status", (event) => {
     }
     else if (event.payload.PreparingSentenceFile) {
         let status = event.payload.PreparingSentenceFile;
-        download_status_element.innerText = `Preparing ${status.translation_language} translations...`;
+        download_status_element.innerHTML = `Preparing ${status.translation_language} translations...<br>This might take a while.`;
     }
     else if (event.payload.DownlodingSentenceFile) {
         let status = event.payload.DownlodingSentenceFile;
