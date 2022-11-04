@@ -25,14 +25,16 @@ function update_ripple(time_stamp: DOMHighResTimeStamp, element: HTMLElement): v
         ripple_start_time = (element as any).ripple_start_time = time_stamp;
     }
 
-    const total_time = 500;
-    const min_scale = 0.4;
+    const total_time = 700;
+    const min_scale = 0.3;
+    const sharpness = 0.8;
 
-    const t = Math.min(time_stamp - ripple_start_time, total_time);
-    const scale = min_scale + (1 - min_scale)*(1 - Math.exp(-7*t/total_time))/(1 - Math.exp(-7));
+    const t = Math.min(time_stamp - ripple_start_time, total_time)/total_time;
+    const scale = min_scale + (1 - min_scale)*(t/(t-Math.pow(1-sharpness, 2)*(t-1)));
+    // const scale = min_scale + (1 - min_scale)*(1 - Math.exp(-7*t/total_time))/(1 - Math.exp(-7));
     element.style.transform = `translateX(-50%) translateY(-50%) scale(${scale})`;
 
-    if (t != total_time && element.parentElement) {
+    if (t != 1 && element.parentElement) {
         requestAnimationFrame(time_stamp => update_ripple(time_stamp, element));
     }
 }
@@ -46,8 +48,8 @@ function add_ripple(element: HTMLElement, event: MouseEvent): void {
 
     const width = element.clientWidth;
     const height = element.clientHeight;
-    const x = event.clientX - element.offsetLeft;
-    const y = event.clientY - element.offsetTop;
+    const x = event.pageX - element.offsetLeft;
+    const y = event.pageY - element.offsetTop;
     
     const radius = Math.sqrt(Math.pow(Math.max(x, width - x), 2) + Math.pow(Math.max(y, height - y), 2));
     ripple.style.width = `${radius*2}px`;

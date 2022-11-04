@@ -34,6 +34,7 @@ let task_state = TaskState.InputWord;
 const invoke = (window as any).__TAURI__.invoke;
 
 const word_input = document.getElementById("word-input")! as HTMLInputElement;
+const word_input_hint = document.getElementById("word-input-hint")! as HTMLElement;
 const next_button = document.getElementById("next-button")! as HTMLButtonElement;
 
 function set_button_text(button: HTMLButtonElement, text: string): void {
@@ -50,12 +51,12 @@ function next_task() {
 		post_input_word_text.innerText = task.sentence.substring(task.word_pos + task.word.length);
 	
 		const word_width = TextMeasure.width_of(task.word, word_input);
-		word_input.style.width = `${word_width + 3}px`;
+		word_input.style.width = `${word_width}px`;
 
 		word_input.value = "";
-		word_input.placeholder = "";
 		word_input.readOnly = false;
 		word_input.style.color = "white";
+		word_input_hint.style.display = "none";
 
 		set_button_text(next_button, "Check");
 	
@@ -132,11 +133,14 @@ word_input.addEventListener("keyup", e => {
 		enter();
 	}
 });
+word_input.addEventListener("input", () => {
+	word_input_hint.style.display = "none";
+});
 
 //----------------------------------------------------------------
 
 function show_success_feedback() {
-	word_input.style.color = "rgb(20, 255, 50)";
+	word_input.style.color = "var(--green)";
 	word_input.readOnly = true;
 	set_button_text(next_button, "Next");
 	task_state = TaskState.Feedback;
@@ -147,8 +151,21 @@ function retry() {
 		return;
 	}
 	
+	let hint = current_task.word;
+	let pos = 0;
+	for (const letter of word_input.value.substring(0, hint.length)) {
+		const pos_in_hint = hint.indexOf(letter, pos);
+		if (pos_in_hint >= 0) {
+			hint = `${hint.substring(0, pos_in_hint)}<i>${letter}</i>${hint.substring(pos_in_hint + 1)}`;
+			pos = pos_in_hint + 1 + "<i></i>".length;
+		}
+		else {
+			++pos;
+		}
+	}
+	word_input_hint.innerHTML = hint;
+	word_input_hint.style.display = "block";
 	word_input.value = "";
-	word_input.placeholder = current_task?.word;
 }
 
 //----------------------------------------------------------------

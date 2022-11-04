@@ -66,6 +66,28 @@ h1 {
 #original-text > p {
     display: inline;
 }
+#word-input-wrapper {
+    display: inline-block;
+    position: relative;
+}
+#word-input-hint {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    color: var(--red);
+    opacity: 0.7;
+    pointer-events: none;
+}
+#word-input-hint > i {
+    font-style: normal;
+    color: var(--green);
+}
+#word-input {
+    margin: 0;
+    padding: 0;
+}
 
 #next-button {
     align-self: center;
