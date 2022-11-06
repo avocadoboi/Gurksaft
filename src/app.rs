@@ -150,7 +150,7 @@ async fn download_language_data(app: tauri::AppHandle, window: tauri::Window, in
 }
 
 #[tauri::command]
-fn add_language(app: tauri::AppHandle, window: tauri::Window) {
+async fn add_language(app: tauri::AppHandle, window: tauri::Window) {
 	create_add_language_window(&app);
 	
 	window.close().unwrap();
