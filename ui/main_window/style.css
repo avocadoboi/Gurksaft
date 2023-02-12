@@ -26,6 +26,22 @@ h1 {
     margin-bottom: 1.5em;
 }
 
+#statistics-button {
+    background-color: transparent;
+    color: var(--secondary);
+    /* border: none; */
+    border: 2px solid var(--secondary);
+    border-radius: 50%;
+    padding: 0.4em;
+    margin: 0;
+    margin-right: 0.2em;
+    box-shadow: none;
+}
+#statistics-button > svg {
+    width: 1.5em;
+    height: 1.5em;
+}
+
 #options-button {
     background-color: transparent;
     color: #aaa;
