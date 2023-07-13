@@ -1,0 +1,19 @@
+<h1>Add language</h1>
+		
+<div id="target-language">
+    <h3>Target language</h3>
+    <app-dropdown #targetLanguage placeholder="Choose language">
+        <app-dropdown-option *ngFor="let language of targetLanguages" [value]="language">{{language}}</app-dropdown-option>
+    </app-dropdown>
+</div>
+
+<div id="translation-languages">
+    <h3>Translation languages</h3>
+    <div id="add-translation-language">
+        <app-dropdown #translationLanguage placeholder="Choose language">
+            <app-dropdown-option *ngFor="let language of translationLanguages" [value]="language">{{language}}</app-dropdown-option>
+        </app-dropdown>
+    </div>
+</div>
+<div id="translation-language-list"></div>
+<button appRipple id="download-button" class="accent-button">Download data</button>

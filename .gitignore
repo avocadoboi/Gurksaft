@@ -1,2 +1,4 @@
 /target
 /save_data
+node_modules/
+.angular/
