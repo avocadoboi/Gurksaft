@@ -14,8 +14,8 @@ import { DropdownOptionComponent } from '../dropdown-option/dropdown-option.comp
 	styleUrls: ['./add-language.component.scss']
 })
 export class AddLanguageComponent implements AfterViewInit {
-	private targetLanguages: string[] = [];
-	private translationLanguages: string[] = [];
+	targetLanguages: string[] = [];
+	translationLanguages: string[] = [];
 	
 	ngAfterViewInit(): void {
 		invoke<string[]>('get_language_list', {}).then(languages => {

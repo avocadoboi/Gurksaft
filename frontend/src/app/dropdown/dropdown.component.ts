@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DropdownOptionComponent } from '../dropdown-option/dropdown-option.component';
 
@@ -15,6 +15,7 @@ export interface DropdownOption {
 	styleUrls: ['./dropdown.component.scss']
 })
 export class DropdownComponent {
+	@Input() placeholder: string = "";
 	options: DropdownOption[] = [];
 	selectedIndex = -1; // -1 before selection
 }

@@ -8,28 +8,56 @@
 }
 
 @font-face {
-    font-family: roboto;
-    src: url(assets/Roboto-Regular.ttf);
+	font-family: roboto;
+	src: url(assets/Roboto-Regular.ttf);
+}
+@font-face {
+	font-family: 'Material Icons';
+	font-style: normal;
+	font-weight: 400;
+	src: url(assets/MaterialIcons-Regular.ttf);
+}
+.material-icons {
+	font-family: 'Material Icons';
+	font-weight: normal;
+	font-style: normal;
+	font-size: 24px; /* Preferred icon size */
+	display: inline-block;
+	line-height: 1;
+	text-transform: none;
+	letter-spacing: normal;
+	word-wrap: normal;
+	white-space: nowrap;
+	direction: ltr;
+  
+	/* Support for all WebKit browsers. */
+	-webkit-font-smoothing: antialiased;
+	/* Support for Safari and Chrome. */
+	text-rendering: optimizeLegibility;
+	/* Support for Firefox. */
+	-moz-osx-font-smoothing: grayscale;
+	/* Support for IE. */
+	font-feature-settings: 'liga';
 }
 
 *,
 *::before,
 *::after {
-  box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 body {
-    margin: 2em;
-    
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
+	margin: 2em;
+	
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
 
-    background-color: rgb(30, 30, 30);
-    
-    color: white;
-    font-family: roboto;
-    font-size: 1.3em;
+	background-color: rgb(30, 30, 30);
+	
+	color: white;
+	font-family: roboto;
+	font-size: 1.3em;
 }
 
 h1 {
