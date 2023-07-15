@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RippleDirective } from '../ripple.directive';
 import { invoke } from '@tauri-apps/api';
 
-import { DropdownComponent, DropdownOption } from '../dropdown/dropdown.component';
+import { DropdownComponent } from '../dropdown/dropdown.component';
 import { DropdownOptionComponent } from '../dropdown-option/dropdown-option.component';
 
 @Component({
@@ -20,9 +20,6 @@ export class AddLanguageComponent implements AfterViewInit {
 	ngAfterViewInit(): void {
 		invoke<string[]>('get_language_list', {}).then(languages => {
 			this.targetLanguages = this.translationLanguages = languages;
-			// for (const dropdown of [this.targetLanguage, this.translationLanguage]) {
-			// 	dropdown.options = languages.map(language => <DropdownOption>{ value: language, text: language });
-			// }
 		});
 	}
 }

@@ -1,5 +1,7 @@
 import { Directive, ElementRef, HostListener, Input } from '@angular/core';
 
+import { animate, reciprocalEaseOutTransferFunction } from './animation';
+
 // We want to fade away the ripples no matter where the user releases the mouse button on the page.
 // A ripple instance is removed the next time the user presses on the element with the ripple on it.
 document.addEventListener('mouseup', () => {
@@ -10,7 +12,6 @@ document.addEventListener('mouseup', () => {
 
 class RippleInstance {
 	private element: HTMLDivElement;
-	private startTime: DOMHighResTimeStamp | null = null;
 
 	constructor(parent: HTMLElement, event: MouseEvent, color: string) {
 		this.element = document.createElement('div');
@@ -20,8 +21,11 @@ class RippleInstance {
 	
 		const width = parent.clientWidth;
 		const height = parent.clientHeight;
-		const x = event.pageX - parent.offsetLeft;
-		const y = event.pageY - parent.offsetTop;
+		
+		const x = event.offsetX;
+		const y = event.offsetY;
+		// const x = event.clientX;//event.pageX - parent.offsetLeft - parent.clientLeft;
+		// const y = event.clientY;//event.pageY - parent.offsetTop - parent.clientTop;
 		
 		const radius = Math.sqrt(Math.pow(Math.max(x, width - x), 2) + Math.pow(Math.max(y, height - y), 2));
 		this.element.style.width = `${radius*2}px`;
@@ -32,30 +36,27 @@ class RippleInstance {
 
 		parent.appendChild(this.element);
 
-		this.update(performance.now());
+		animate(t => {
+			const minScale = 0.2;
+			const scale = minScale + (1 - minScale)*reciprocalEaseOutTransferFunction(t);
+			this.element.style.transform = `translateX(-50%) translateY(-50%) scale(${scale})`;
+		}, 650);
+		// requestAnimationFrame(t => this.element.style.transform = `translateX(-50%) translateY(-50%) scale(${1})`);
+		
+			// this.update(performance.now());
 	}
 
-	/*
-		Using css animations with a cubic bezier easing for animating the ripples doesn't work on webkitgtk 
-		for some reason (the animation is always linear), so here's a hardcoded animation.
-	*/
-	update(timeStamp: DOMHighResTimeStamp) {
-		if (this.startTime == null) {
-			this.startTime = timeStamp;
-		}
+	// update(timeStamp: DOMHighResTimeStamp) {
+	// 	const minScale = 0.3;
+	// 	const sharpness = 0.8;
 	
-		const totalTime = 700;
-		const minScale = 0.3;
-		const sharpness = 0.8;
+	// 	const t = Math.min(timeStamp - this.startTime, totalTime)/totalTime;
+	// 	const scale = minScale + (1 - minScale)*t/(t - Math.pow(1 - sharpness, 2)*(t - 1));
 	
-		const t = Math.min(timeStamp - this.startTime, totalTime)/totalTime;
-		const scale = minScale + (1 - minScale)*t/(t - Math.pow(1 - sharpness, 2)*(t - 1));
-		this.element.style.transform = `translateX(-50%) translateY(-50%) scale(${scale})`;
-	
-		if (t < 1 && this.element.parentElement) {
-			requestAnimationFrame(timeStamp => this.update(timeStamp));
-		}
-	}
+	// 	if (t < 1 && this.element.parentElement) {
+	// 		requestAnimationFrame(timeStamp => this.update(timeStamp));
+	// 	}
+	// }
 	
 	remove() {
 		this.element.remove();
@@ -78,7 +79,7 @@ export class RippleDirective {
 		this.element = elementReference.nativeElement;
 		this.element.style.overflow = 'hidden';
 		this.element.style.position = 'relative';
-		
+
 		this.overlay = document.createElement('div');
 		this.overlay.className = 'hover-overlay';
 	
