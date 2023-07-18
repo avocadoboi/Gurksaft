@@ -1,5 +1,14 @@
 .option {
 	cursor: default;
-	font-size: 0.9em;
-	padding: 4px 24px 4px 12px;
+	// font-size: 0.9em;
+	padding: 6px 24px 6px 12px;
+}
+:host {
+	display: block;
+}
+:host:first-child {
+	margin-top: 6px;
+}
+:host:last-child {
+	margin-bottom: 6px;
 }

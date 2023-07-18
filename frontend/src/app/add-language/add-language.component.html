@@ -2,18 +2,35 @@
 		
 <div id="target-language">
 	<h3>Target language</h3>
-	<app-dropdown #targetLanguage placeholder="Choose language">
-		<app-dropdown-option *ngFor="let language of targetLanguages" [value]="language">{{language}}</app-dropdown-option>
+	<app-dropdown id="target-language-dropdown" placeholder="Choose language" (selectionChange)="selectTargetLanguage($event)">
+		<app-dropdown-option *ngFor="let language of languageOptions" [value]="language">
+			{{language}}
+		</app-dropdown-option>
 	</app-dropdown>
 </div>
 
 <div id="translation-languages">
 	<h3>Translation languages</h3>
-	<div id="add-translation-language">
-		<app-dropdown #translationLanguage placeholder="Choose language">
-			<app-dropdown-option *ngFor="let language of translationLanguages" [value]="language">{{language}}</app-dropdown-option>
-		</app-dropdown>
+	<app-dropdown placeholder="Add language" (selectionChange)="selectTranslationLanguage($event)">
+		<app-dropdown-option *ngFor="let language of languageOptions" [value]="language">
+			{{language}}
+		</app-dropdown-option>
+	</app-dropdown>
+</div>
+<div id="translation-language-list">
+	<div *ngFor="let language of translationLanguages">
+		{{language}}
+		<button appRipple="bad" 
+			class="remove-translation-language-button bad-button material-icons" 
+			(click)="removeTranslationLanguage($event)">
+			remove
+		</button>
 	</div>
 </div>
-<div id="translation-language-list"></div>
-<button appRipple id="download-button" class="accent-button">Download data</button>
+<button appRipple 
+	id="download-button" 
+	class="accent-button" 
+	(click)="download()" 
+	[disabled]="!(targetLanguage && translationLanguages.length)">
+	Download data
+</button>

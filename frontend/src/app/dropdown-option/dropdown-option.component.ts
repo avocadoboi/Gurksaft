@@ -27,7 +27,6 @@ export class DropdownOptionComponent implements AfterViewInit {
 	}
 
 	select() {
-		console.log('waaa');
 		if (this.dropdown) {
 			this.dropdown.select(this);
 		}

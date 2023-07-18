@@ -1,8 +1,9 @@
-// #add-language {
-//     display: flex;
-//     flex-direction: column;
-//     align-items: flex-start;
-// }
+:host {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	max-width: 500px;
+}
 
 #target-language {
 	display: flex;
@@ -15,49 +16,35 @@ h3 {
 	margin: 0;
 }
 
-#target-language-dropdown-wrapper {
-	margin-bottom: 1em;
+#target-language-dropdown {
+	min-width: 150px;
 }
 #translation-languages {
 	display: flex;
 	flex-direction: row;
 	gap: 1em;
 	align-items: center;
-	width: 100%;
 	margin-bottom: 1em;
 }
 
-#translation-language-list {
+#translation-language-list:not(:empty) {
 	display: flex;
 	flex-direction: row;
-	gap: 1.5em;
+	flex-wrap: wrap;
+	gap: 0.5em 1.5em;
+	margin-bottom: 1em;
 }
 #translation-language-list > div {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 	gap: 0.5em;
-	margin-bottom: 1em;
 }
 
 .remove-translation-language-button {
 	border-radius: 50%;
 	padding: 4px;
-}
-
-#add-translation-language {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	gap: 0.5em;
-}
-#add-translation-language-button {
-	background-color: transparent;
-	color: var(--secondary);
-	border: 2px solid var(--secondary);
-	border-radius: 50%;
-	padding: 4px;
-	font-size: 1.3em;
+	box-shadow: none;
 }
 
 #download-button {
@@ -65,7 +52,7 @@ h3 {
 	align-self: center;
 }
 
-/*----------------------------------------------------------------*/
+//--------------------------------
 
 #download-progress {
 	display: none;

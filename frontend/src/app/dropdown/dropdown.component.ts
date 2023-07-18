@@ -6,7 +6,9 @@ import {
 	Input, 
 	HostListener, 
 	ContentChildren, 
-	QueryList 
+	QueryList, 
+	Output,
+	EventEmitter
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DropdownOptionComponent } from '../dropdown-option/dropdown-option.component';
@@ -28,20 +30,22 @@ export class DropdownComponent implements AfterContentInit {
 	
 	@Input() placeholder: string = '';
 
-	selectedIndex = -1; // -1 before selection
+	@Output() selectionChange = new EventEmitter<DropdownOptionComponent>();
+
+	selectedOption?: DropdownOptionComponent;
 	isOpen: boolean = false;
 
 	// Used to tell whether a click is outside or inside the dropdown.
 	// Outside always closes it while inside toggles it.
 	wasClicked: boolean = false;
 
-	toggle(event: MouseEvent) {
+	toggle(event: MouseEvent): void {
 		this.isOpen = !this.isOpen;
 		animate(t => {
 			let factor = reciprocalEaseOutTransferFunction(t, 0.75);
 			factor = this.isOpen ? factor : 1 - factor;
 			
-			const height = factor*250;
+			const height = factor*200;
 			this.optionsView.nativeElement.style.maxHeight = `${height}px`;
 
 			this.optionsView.nativeElement.style.opacity = `${Math.min(factor*1.2, 1)}`;
@@ -49,25 +53,33 @@ export class DropdownComponent implements AfterContentInit {
 		this.wasClicked = true;
 	}
 
-	@HostListener('document:click', ['event']) clickOutside(event: MouseEvent) {
+	@HostListener('document:click', ['event']) clickOutside(event: MouseEvent): void {
 		if (this.isOpen && !this.wasClicked) {
 			this.toggle(event);
 		}
 		this.wasClicked = false;
 	}
 
-	ngAfterContentInit() {
+	ngAfterContentInit(): void {
 		this.options.changes.subscribe((options: QueryList<DropdownOptionComponent>) => {
 			let index = 0;
 			options.forEach((option: DropdownOptionComponent) => {
 				option.dropdown = this;
 				option.index = index++;
 			});
-		})
+		});
 	}
 
-	select(option: DropdownOptionComponent) {
-		this.selectedIndex = option.index;
+	select(option: DropdownOptionComponent): void {
+		this.selectedOption = option;
 		this.dropdownText.nativeElement.innerText = option.text;
+		this.dropdownText.nativeElement.classList.remove('placeholder');
+		this.selectionChange.emit(option);
+	}
+
+	removeSelection(): void {
+		this.dropdownText.nativeElement.innerText = this.placeholder;
+		this.dropdownText.nativeElement.classList.add('placeholder');
+		this.selectedOption = undefined;
 	}
 }

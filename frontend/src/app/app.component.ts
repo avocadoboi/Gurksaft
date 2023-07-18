@@ -6,6 +6,7 @@ import { AddLanguageComponent } from './add-language/add-language.component';
 	standalone: true,
 	imports: [AddLanguageComponent],
 	templateUrl: 'app.component.html',
+	styles: [':host { display: contents; }']
 })
 export class AppComponent {
 }

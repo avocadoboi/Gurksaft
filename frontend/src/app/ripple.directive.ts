@@ -6,7 +6,7 @@ import { animate, reciprocalEaseOutTransferFunction } from './animation';
 // A ripple instance is removed the next time the user presses on the element with the ripple on it.
 document.addEventListener('mouseup', () => {
     for (const ripple of document.getElementsByClassName('ripple-instance') as HTMLCollectionOf<HTMLElement>) {
-        ripple.style.backgroundColor = "transparent";
+        ripple.style.backgroundColor = 'transparent';
     }
 });
 
@@ -19,13 +19,8 @@ class RippleInstance {
 		this.element.style.borderRadius = '50%';
 		this.element.style.backgroundColor = color;
 	
-		const width = parent.clientWidth;
-		const height = parent.clientHeight;
-		
-		const x = event.offsetX;
-		const y = event.offsetY;
-		// const x = event.clientX;//event.pageX - parent.offsetLeft - parent.clientLeft;
-		// const y = event.clientY;//event.pageY - parent.offsetTop - parent.clientTop;
+		const [x, y, width, height] = 
+			[event.offsetX, event.offsetY, parent.clientWidth, parent.clientHeight];
 		
 		const radius = Math.sqrt(Math.pow(Math.max(x, width - x), 2) + Math.pow(Math.max(y, height - y), 2));
 		this.element.style.width = `${radius*2}px`;
@@ -41,26 +36,15 @@ class RippleInstance {
 			const scale = minScale + (1 - minScale)*reciprocalEaseOutTransferFunction(t);
 			this.element.style.transform = `translateX(-50%) translateY(-50%) scale(${scale})`;
 		}, 650);
-		// requestAnimationFrame(t => this.element.style.transform = `translateX(-50%) translateY(-50%) scale(${1})`);
-		
-			// this.update(performance.now());
 	}
-
-	// update(timeStamp: DOMHighResTimeStamp) {
-	// 	const minScale = 0.3;
-	// 	const sharpness = 0.8;
-	
-	// 	const t = Math.min(timeStamp - this.startTime, totalTime)/totalTime;
-	// 	const scale = minScale + (1 - minScale)*t/(t - Math.pow(1 - sharpness, 2)*(t - 1));
-	
-	// 	if (t < 1 && this.element.parentElement) {
-	// 		requestAnimationFrame(timeStamp => this.update(timeStamp));
-	// 	}
-	// }
 	
 	remove() {
 		this.element.remove();
 	}
+}
+
+function getCssColor(name: string, alpha: number = 1): string {
+	return `rgb(${getComputedStyle(document.documentElement).getPropertyValue(name)}, ${alpha})`;
 }
 
 @Directive({
@@ -97,19 +81,19 @@ export class RippleDirective {
 		this.rippleInstance?.remove();
 		this.rippleInstance = new RippleInstance(this.element, event, this.getColor());
 	}
-
+	
 	getColor(): string {
 		if (this.appRipple == 'light') {
-			return 'white';
+			return getCssColor('--highlight');
 		}
 		if (this.appRipple == 'accent') {
-			return getComputedStyle(this.element).getPropertyValue('--accent');
+			return getCssColor('--accent');
 		}
 		if (this.appRipple == 'secondary') {
-			return getComputedStyle(this.element).getPropertyValue('--secondary');
+			return getCssColor('--secondary');
 		}
-		if (this.appRipple == 'red') {
-			return getComputedStyle(this.element).getPropertyValue('--red');
+		if (this.appRipple == 'bad') {
+			return getCssColor('--bad');
 		}
 		return 'black';
 	}

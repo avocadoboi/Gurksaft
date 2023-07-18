@@ -1,11 +1,11 @@
 [package]
-name = "app"
+name = "Gurksaft"
 version = "0.1.0"
-description = "A Tauri App"
+description = ""
 authors = ["you"]
 license = ""
 repository = ""
-default-run = "app"
+default-run = "Gurksaft"
 edition = "2021"
 rust-version = "1.60"
 
