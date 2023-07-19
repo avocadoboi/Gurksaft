@@ -1,4 +1,4 @@
-/target
-/save_data
+/backend/target
+/backend/save_data
 node_modules/
 .angular/

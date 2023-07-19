@@ -1,10 +1,12 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RippleDirective } from '../ripple.directive';
+import { Router } from '@angular/router';
+
 import { invoke } from '@tauri-apps/api';
 
 import { DropdownComponent } from '../dropdown/dropdown.component';
 import { DropdownOptionComponent } from '../dropdown-option/dropdown-option.component';
+import { RippleDirective } from '../ripple.directive';
 
 // Could do a binary search but there is no reason to for this use case (less than 1k elements).
 function insertSortedArray<T>(array: T[], toInsert: T): void {
@@ -29,6 +31,8 @@ export class AddLanguageComponent implements AfterViewInit {
 	
 	targetLanguage: string = '';
 	translationLanguages: string[] = [];
+	
+	constructor(private router: Router) {}
 	
 	ngAfterViewInit(): void {
 		// Populate the dropdowns with language options.
@@ -63,6 +67,12 @@ export class AddLanguageComponent implements AfterViewInit {
 		}
 	}
 	download(): void {
-		
+		invoke('download_language_data', {
+			info: {
+				target_language: this.targetLanguage,
+				translation_languages: this.translationLanguages
+			}
+		});
+		this.router.navigate(['download-language-data']);
 	}
 }

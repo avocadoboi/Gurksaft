@@ -23,19 +23,6 @@ impl AppState {
 	}
 }
 
-enum WindowLabel {
-	AddLanguage,
-	MainWindow,
-}
-impl fmt::Display for WindowLabel {
-	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-		match self {
-			WindowLabel::AddLanguage => write!(f, "add_language"),
-			WindowLabel::MainWindow => write!(f, "main_window"),
-		}
-	}
-}
-
 //----------------------------------------------------------------
 
 #[tauri::command]
@@ -92,20 +79,6 @@ async fn set_current_language(app: tauri::AppHandle, language_name: String) {
 	}
 }
 
-fn create_main_window(app: &tauri::AppHandle) {
-	tauri::WindowBuilder::new(app, WindowLabel::MainWindow.to_string(), tauri::WindowUrl::App("main_window/index.html".into()))
-		.center()
-		.inner_size(700., 600.)
-		.title("Language learning tool").build().unwrap();
-}
-fn create_add_language_window(app: &tauri::AppHandle) {
-	tauri::WindowBuilder::new(app, WindowLabel::AddLanguage.to_string(), tauri::WindowUrl::App("add_language/index.html".into()))
-		.center()
-		.inner_size(700., 450.)
-		.title("Add language")
-		.build().unwrap();
-}
-
 fn add_new_language_data(app: &tauri::AppHandle, source_data: SourceData) {
 	if let Some(state) = app.try_state::<AppState>() {
 		let mut options = state.options.lock().unwrap();
@@ -143,35 +116,33 @@ async fn download_language_data(app: tauri::AppHandle, window: tauri::Window, in
 	window.emit("download_status", &source_data::SourceDataDownloadStatus::Loading).unwrap();
 
 	add_new_language_data(&app, source_data);
-
-	create_main_window(&app);
-
-	window.close().unwrap();
-}
-
-#[tauri::command]
-async fn add_language(app: tauri::AppHandle, window: tauri::Window) {
-	create_add_language_window(&app);
-	
-	window.close().unwrap();
 }
 
 fn start_app(app: &tauri::App) {
-	if let Some(options) = Options::load() {
-		let learning_data = Mutex::new(LearningData::load_from_file(options.language_index));
-		app.manage(AppState {
-			options: Mutex::new(options),
-			learning_data
-		});
-		create_main_window(&app.handle());
-	}
-	else {
-		create_add_language_window(&app.handle());
-	}
+	// if let Some(options) = Options::load() {
+	// 	let learning_data = Mutex::new(LearningData::load_from_file(options.language_index));
+	// 	app.manage(AppState {
+	// 		options: Mutex::new(options),
+	// 		learning_data
+	// 	});
+	// 	tauri::WindowBuilder::new(app, "main", tauri::WindowUrl::App("main_window/index.html".into()))
+	// 		.center()
+	// 		.inner_size(700., 600.)
+	// 		.title("Gurksaft human language learning tool").build().unwrap();
+	// }
+	// else {
+		tauri::WindowBuilder::new(app, "main", tauri::WindowUrl::App("add-language".into()))
+			.center()
+			.inner_size(700., 450.)
+			.title("Gurksaft - Add language")
+			.build().unwrap();
+	println!("APp started!!1");
+	// }
 }
 
 fn handle_window_event(event: tauri::GlobalWindowEvent) {
 	if let tauri::WindowEvent::Destroyed = event.event() {
+		println!("App closes!!");
 		if let Some(app) = event.window().try_state::<AppState>() {
 			app.save();
 		}
@@ -180,10 +151,10 @@ fn handle_window_event(event: tauri::GlobalWindowEvent) {
 
 pub fn run() {
 	tauri::Builder::default()
-		// .setup(|app| { start_app(app); Ok(()) })
+		.setup(|app| { start_app(app); Ok(()) })
 		.invoke_handler(tauri::generate_handler![
 			get_language_list,
-		// 	download_language_data,
+			download_language_data,
 		// 	next_task, 
 		// 	finish_task,
 		// 	get_saved_language_list,
@@ -194,7 +165,7 @@ pub fn run() {
 		// 	set_success_weight_factor,
 		// 	set_failure_weight_factor
 		])
-		// .on_window_event(handle_window_event)
+		.on_window_event(handle_window_event)
 		.run(tauri::generate_context!())
 		.unwrap();
 }

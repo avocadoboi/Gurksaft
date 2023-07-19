@@ -1,6 +1,6 @@
 /*
-	CSS animations are laggy on webkitgtk for some reason, so this file contains 
-	some simple animation utilities.
+	CSS animations are choppy on webkitgtk for some reason, so this file contains 
+	some simple animation utilities for when we need animations to be SMOOTH.
 */
 
 export function reciprocalEaseOutTransferFunction(t: number, sharpness: number = 0.8) {

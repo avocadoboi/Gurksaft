@@ -32,7 +32,7 @@ h3 {
 	flex-direction: row;
 	flex-wrap: wrap;
 	gap: 0.5em 1.5em;
-	margin-bottom: 1em;
+	margin-bottom: 0.5em;
 }
 #translation-language-list > div {
 	display: flex;
@@ -50,17 +50,4 @@ h3 {
 #download-button {
 	margin-top: 1em;
 	align-self: center;
-}
-
-//--------------------------------
-
-#download-progress {
-	display: none;
-	align-self: center;
-}
-
-#download-progress-text {
-	font-size: 1.5em;
-	line-height: 1.5em;
-	margin: 0;
 }

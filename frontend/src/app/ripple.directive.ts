@@ -2,14 +2,6 @@ import { Directive, ElementRef, HostListener, Input } from '@angular/core';
 
 import { animate, reciprocalEaseOutTransferFunction } from './animation';
 
-// We want to fade away the ripples no matter where the user releases the mouse button on the page.
-// A ripple instance is removed the next time the user presses on the element with the ripple on it.
-document.addEventListener('mouseup', () => {
-    for (const ripple of document.getElementsByClassName('ripple-instance') as HTMLCollectionOf<HTMLElement>) {
-        ripple.style.backgroundColor = 'transparent';
-    }
-});
-
 class RippleInstance {
 	private element: HTMLDivElement;
 
@@ -38,7 +30,10 @@ class RippleInstance {
 		}, 650);
 	}
 	
-	remove() {
+	fadeAway(): void {
+        this.element.style.backgroundColor = 'transparent';
+	}
+	remove(): void {
 		this.element.remove();
 	}
 }
@@ -70,16 +65,19 @@ export class RippleDirective {
 		this.element.appendChild(this.overlay);
 	}
 
-	@HostListener('mouseenter') showHoverOverlay() {
+	@HostListener('mouseenter') showHoverOverlay(): void {
 		this.overlay.style.backgroundColor = this.getColor();
 	}
-	@HostListener('mouseleave') hideHoverOverlay() {
+	@HostListener('mouseleave') hideHoverOverlay(): void {
 		this.overlay.style.backgroundColor = 'transparent';
 	}
 
-	@HostListener('mousedown', ['$event']) addRipple(event: MouseEvent) {
+	@HostListener('mousedown', ['$event']) addRipple(event: MouseEvent): void {
 		this.rippleInstance?.remove();
 		this.rippleInstance = new RippleInstance(this.element, event, this.getColor());
+	}
+	@HostListener('document:mouseup') fadeRipple(): void {
+		this.rippleInstance?.fadeAway();
 	}
 	
 	getColor(): string {

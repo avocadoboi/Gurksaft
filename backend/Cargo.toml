@@ -1,11 +1,11 @@
 [package]
-name = "Gurksaft"
+name = "gurksaft"
 version = "0.1.0"
 description = ""
 authors = ["you"]
 license = ""
 repository = ""
-default-run = "Gurksaft"
+default-run = "gurksaft"
 edition = "2021"
 rust-version = "1.60"
 

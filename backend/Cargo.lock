@@ -3,21 +3,6 @@
 version = 3
 
 [[package]]
-name = "Gurksaft"
-version = "0.1.0"
-dependencies = [
- "bincode",
- "csv",
- "rand 0.8.5",
- "reqwest",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "tokio",
-]
-
-[[package]]
 name = "addr2line"
 version = "0.20.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1136,6 +1121,21 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 1.0.109",
+]
+
+[[package]]
+name = "gurksaft"
+version = "0.1.0"
+dependencies = [
+ "bincode",
+ "csv",
+ "rand 0.8.5",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tokio",
 ]
 
 [[package]]
