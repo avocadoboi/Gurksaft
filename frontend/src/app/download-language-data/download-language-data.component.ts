@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
 import { invoke, event } from '@tauri-apps/api';
+import { appWindow } from '@tauri-apps/api/window';
 
 @Component({
 	selector: 'app-download-language-data',
@@ -15,6 +16,8 @@ export class DownloadLanguageDataComponent {
 	statusMessage: string = 'Loading...';
 	
 	constructor(private router: Router, private changeDetector: ChangeDetectorRef) { 
+		appWindow.setTitle('Gurksaft - downloading data');
+		
 		const progress_to_string = (progress: number) => 
 			progress <= 1 ? `${Math.round(progress*100)}%` : `${progress} bytes`;
 	
@@ -34,11 +37,13 @@ export class DownloadLanguageDataComponent {
 			else if (event.payload == 'Loading') {
 				this.statusMessage = "Parsing data...";
 			}
+			else if (event.payload == 'Finished') {
+				router.navigate(['learn']);
+			}
 			else {
 				console.error(JSON.stringify(event));
 			}
-			console.log(this.statusMessage);
-			this.changeDetector.detectChanges();
+			changeDetector.detectChanges();
 		});
 	}
 }

@@ -1,0 +1,33 @@
+<div id="task-header">
+	<h1>Task</h1>
+	<button appRipple="secondary" id="statistics-button" class="material-symbols">monitoring</button>
+	<button appRipple="highlight" id="options-button" class="material-symbols">settings</button>
+</div>
+
+<div id="phrase-header">
+	<h2>Phrase</h2>
+	<button appRipple="bad" id="delete-phrase-button" class="bad-button">Delete phrase</button>
+	<button appRipple="bad" id="delete-word-button" class="bad-button">Delete word</button>
+</div>
+
+<div id="original-text">
+	<p>{{preInputText}}</p>
+	<div id="word-input-wrapper">
+		<div id="word-input-hint" [innerHTML]="hint"></div>
+		<input #wordInput id="word-input" value="" autofocus
+			(keyup)="handleInputKeyUp($event)"
+			(input)="hint = ''">
+	</div>
+	<p>{{postInputText}}</p>
+</div>
+<button appRipple id="next-button" class="accent-button" (click)="continue()">
+	{{buttonText}}
+</button>
+<h2>Translations</h2>
+<div id="translations">
+	<ul *ngIf="currentTask">
+		<li *ngFor="let translation of currentTask.translations">
+			{{translation}}
+		</li>
+	</ul>
+</div>

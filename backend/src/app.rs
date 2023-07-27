@@ -116,33 +116,33 @@ async fn download_language_data(app: tauri::AppHandle, window: tauri::Window, in
 	window.emit("download_status", &source_data::SourceDataDownloadStatus::Loading).unwrap();
 
 	add_new_language_data(&app, source_data);
+
+	window.emit("download_status", &source_data::SourceDataDownloadStatus::Finished).unwrap();
 }
 
 fn start_app(app: &tauri::App) {
-	// if let Some(options) = Options::load() {
-	// 	let learning_data = Mutex::new(LearningData::load_from_file(options.language_index));
-	// 	app.manage(AppState {
-	// 		options: Mutex::new(options),
-	// 		learning_data
-	// 	});
-	// 	tauri::WindowBuilder::new(app, "main", tauri::WindowUrl::App("main_window/index.html".into()))
-	// 		.center()
-	// 		.inner_size(700., 600.)
-	// 		.title("Gurksaft human language learning tool").build().unwrap();
-	// }
-	// else {
+	if let Some(options) = Options::load() {
+		let learning_data = Mutex::new(LearningData::load_from_file(options.language_index));
+		app.manage(AppState {
+			options: Mutex::new(options),
+			learning_data
+		});
+		tauri::WindowBuilder::new(app, "main", tauri::WindowUrl::App("learn".into()))
+			.center()
+			.inner_size(700., 600.)
+			.title("Gurksaft").build().unwrap();
+	}
+	else {
 		tauri::WindowBuilder::new(app, "main", tauri::WindowUrl::App("add-language".into()))
 			.center()
 			.inner_size(700., 450.)
-			.title("Gurksaft - Add language")
+			.title("Gurksaft")
 			.build().unwrap();
-	println!("APp started!!1");
-	// }
+	}
 }
 
 fn handle_window_event(event: tauri::GlobalWindowEvent) {
 	if let tauri::WindowEvent::Destroyed = event.event() {
-		println!("App closes!!");
 		if let Some(app) = event.window().try_state::<AppState>() {
 			app.save();
 		}
@@ -155,15 +155,14 @@ pub fn run() {
 		.invoke_handler(tauri::generate_handler![
 			get_language_list,
 			download_language_data,
-		// 	next_task, 
-		// 	finish_task,
-		// 	get_saved_language_list,
-		// 	get_current_language,
-		// 	set_current_language,
-		// 	add_language,
-		// 	get_weight_factors,
-		// 	set_success_weight_factor,
-		// 	set_failure_weight_factor
+			next_task, 
+			finish_task,
+			get_saved_language_list,
+			get_current_language,
+			set_current_language,
+			get_weight_factors,
+			set_success_weight_factor,
+			set_failure_weight_factor
 		])
 		.on_window_event(handle_window_event)
 		.run(tauri::generate_context!())

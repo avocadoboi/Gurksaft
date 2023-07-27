@@ -10,7 +10,7 @@
 			"cwd": "../frontend"
 		},
 		"devPath": "http://localhost:4200/",
-		"distDir": "../dist"
+		"distDir": "../frontend/dist"
 	},
 	"package": {
 		"productName": "Gurksaft",
@@ -18,7 +18,43 @@
 	},
 	"tauri": {
 		"allowlist": {
-			"all": false
+			"all": false,
+			"window": {
+				"all": false,
+				"center": false,
+				"close": false,
+				"create": false,
+				"hide": false,
+				"maximize": false,
+				"minimize": false,
+				"print": false,
+				"requestUserAttention": false,
+				"setAlwaysOnTop": false,
+				"setClosable": false,
+				"setContentProtected": false,
+				"setCursorGrab": false,
+				"setCursorIcon": false,
+				"setCursorPosition": false,
+				"setCursorVisible": false,
+				"setDecorations": false,
+				"setFocus": false,
+				"setFullscreen": false,
+				"setIcon": false,
+				"setIgnoreCursorEvents": false,
+				"setMaxSize": false,
+				"setMaximizable": false,
+				"setMinSize": false,
+				"setMinimizable": false,
+				"setPosition": false,
+				"setResizable": false,
+				"setSize": false,
+				"setSkipTaskbar": false,
+				"setTitle": true,
+				"show": false,
+				"startDragging": false,
+				"unmaximize": false,
+				"unminimize": false
+			}
 		},
 		"bundle": {
 			"active": true,
@@ -35,7 +71,7 @@
 				"icons/icon.icns",
 				"icons/icon.ico"
 			],
-			"identifier": "com.tauri.dev",
+			"identifier": "com.gurksaft.dev",
 			"longDescription": "",
 			"macOS": {
 				"entitlements": null,

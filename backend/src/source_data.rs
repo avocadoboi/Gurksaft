@@ -301,19 +301,31 @@ pub const LANGUAGES: &[Language] = &[
 
 //----------------------------------------------------------------
 
+/*
+	Used as input to the procedure that fetches word and sentence data for a particular target language and translation language(s).
+*/
 #[derive(Deserialize, Serialize)]
 pub struct SourceDataInfo {
+	// The language that the user wants to learn.
 	pub target_language: String,
+	// The language(s) that the user knows and wants to see translations in for this particular target language.
 	pub translation_languages: Vec<String>,
 }
 
+/*
+	Source file data with words and sentences for a particular target language.
+	This data is parsed in learning_data.rs.
+*/
 pub struct SourceData {
+	// The index of the target language in the LANGUAGES array above.
 	pub language_index: usize,
+	// The word frequency list file data fetched from the internet.
 	pub word_list: Vec<u8>,
+	// The concatenated file data for the lists of sentences in the target language together with translations in the translation languages.
 	pub sentence_list: Vec<u8>,
 }
 
-impl SourceData {	
+impl SourceData {
 	pub async fn download<F>(info: SourceDataInfo, status_callback: F) -> Self 
 		where F: Fn(SourceDataDownloadStatus)
 	{
@@ -329,6 +341,7 @@ pub enum SourceDataDownloadStatus {
 	PreparingSentenceFile { translation_language: String },
 	DownlodingSentenceFile { translation_language: String, progress: f64 },
 	Loading,
+	Finished,
 }
 
 struct SourceDataDownloader<F: Fn(SourceDataDownloadStatus)> {
@@ -362,6 +375,7 @@ impl<F: Fn(SourceDataDownloadStatus)> SourceDataDownloader<F> {
 	async fn download_words(&self) -> Vec<u8> {
 		let language = &LANGUAGES[self.target_language_index];
 
+		// GitHub repository for the word frequency data by Hermit Dave: https://github.com/hermitdave/FrequencyWords/tree/master.
 		let words_url = "https://raw.githubusercontent.com/hermitdave/FrequencyWords/master/content/2018";
 
 		let response = self.client.get(format!("{0}/{1}/{1}_50k.txt", words_url, language.id_2)).send().await;

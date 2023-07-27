@@ -167,7 +167,8 @@ impl LearningData {
 				word_id,
 				sentence_id,
 				word: word.word.clone(),
-				word_pos: util::find_word_position(&sentence.original, &word.word).expect("the word should exist in the chosen sentence"),
+				word_pos: util::find_word_position(&sentence.original, &word.word)
+					.expect("the word should exist in the chosen sentence"),
 				sentence: sentence.original.clone(),
 				translations: sentence.translations.iter().map(|sentence| sentence.text.clone()).collect(),
 			}

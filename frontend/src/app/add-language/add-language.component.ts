@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
 import { invoke } from '@tauri-apps/api';
+import { appWindow } from '@tauri-apps/api/window';
 
 import { DropdownComponent } from '../dropdown/dropdown.component';
 import { DropdownOptionComponent } from '../dropdown-option/dropdown-option.component';
@@ -32,7 +33,9 @@ export class AddLanguageComponent implements AfterViewInit {
 	targetLanguage: string = '';
 	translationLanguages: string[] = [];
 	
-	constructor(private router: Router) {}
+	constructor(private router: Router) {
+		appWindow.setTitle('Gurskaft - add language');
+	}
 	
 	ngAfterViewInit(): void {
 		// Populate the dropdowns with language options.
