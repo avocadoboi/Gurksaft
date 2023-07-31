@@ -3,7 +3,6 @@ use crate::{learning_data, learning_data::LearningData};
 use crate::{options, options::Options};
 use crate::{source_data, source_data::SourceData};
 
-use std::fmt;
 use std::sync::Mutex;
 
 use tauri::Manager;

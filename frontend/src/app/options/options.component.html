@@ -1,1 +1,32 @@
-<p>options works!</p>
+<h1>Options</h1>
+<div>
+	<h3>Language:</h3>
+
+	<app-dropdown #languageDropdown placeholder="Choose language">
+		<app-dropdown-option *ngFor="let language of savedLanguages" [value]="language">
+			{{language}}
+		</app-dropdown-option>
+	</app-dropdown>
+	<!-- <div class="select">
+		<select id="language-dropdown" required>
+			<option value="" disabled selected>Choose language</option>
+		</select>
+	</div> -->
+	<button appRipple="secondary" id="add-language-button" class="material-symbols" routerLink="/add-language">
+		add
+	</button>
+</div>
+<div>
+	<h3>Success weight factor:</h3>
+	<input id="success-weight-factor-input" type="number">
+</div>
+<div>
+	<h3>Failure weight factor:</h3>
+	<input id="failure-weight-factor-input" type="number">
+</div>
+<!-- <h2 id="weight-visualization-header">Weight visualization</h2>
+<div>
+	<canvas></canvas>
+</div> -->
+
+<button appRipple="secondary-foreground" id="back-button" routerLink="/learn">Back</button>

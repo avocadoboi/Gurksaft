@@ -22,7 +22,7 @@ export class DropdownOptionComponent implements AfterViewInit {
 
 	ngAfterViewInit() {
 		if (this.content) {
-			this.text = this.content.nativeElement.textContent;
+			this.text = (this.content.nativeElement.textContent as string).trim();
 		}
 	}
 

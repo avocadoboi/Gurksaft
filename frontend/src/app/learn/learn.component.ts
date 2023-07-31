@@ -1,10 +1,11 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-import { RippleDirective } from '../ripple.directive';
+import { RouterModule } from '@angular/router';
 
 import { invoke } from '@tauri-apps/api';
 import { appWindow } from '@tauri-apps/api/window';
+
+import { RippleDirective } from '../ripple.directive';
 
 //----------------------------------------------------------------
 
@@ -51,7 +52,7 @@ enum TaskResult {
 @Component({
 	selector: 'app-learn',
 	standalone: true,
-	imports: [CommonModule, RippleDirective],
+	imports: [CommonModule, RippleDirective, RouterModule],
 	templateUrl: './learn.component.html',
 	styleUrls: ['./learn.component.scss']
 })

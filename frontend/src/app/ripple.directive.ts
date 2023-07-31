@@ -81,17 +81,8 @@ export class RippleDirective {
 	}
 	
 	getColor(): string {
-		if (this.appRipple == 'highlight') {
-			return getCssColor('--highlight');
-		}
-		if (this.appRipple == 'accent') {
-			return getCssColor('--accent');
-		}
-		if (this.appRipple == 'secondary') {
-			return getCssColor('--secondary');
-		}
-		if (this.appRipple == 'bad') {
-			return getCssColor('--bad');
+		if (this.appRipple) {
+			return getCssColor(`--${this.appRipple}`);
 		}
 		return 'black';
 	}

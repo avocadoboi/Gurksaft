@@ -1,0 +1,45 @@
+:host {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;	
+}
+h2 {
+	text-align: center;
+	width: 100%;
+	margin-bottom: 1em;
+}
+h3 {
+	margin-bottom: 0;
+	margin-right: 0.5em;
+}
+
+:host > div {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 0.5em;
+	margin-bottom: 1.3em;
+}
+
+input {
+	width: 3em;
+}
+
+#add-language-button {
+	background-color: transparent;
+	color: rgb(var(--secondary));
+	border-radius: 50%;
+	border: 2px solid rgb(var(--secondary));
+	padding: 0.1em;
+	font-size: 1.1em;
+	box-shadow: none;
+}
+
+#weight-visualization-header {
+	margin-top: 0.5em;
+}
+
+#back-button {
+	align-self: center;
+	margin-top: 0.5em;
+}

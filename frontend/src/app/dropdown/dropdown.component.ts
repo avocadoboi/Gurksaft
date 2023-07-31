@@ -11,10 +11,9 @@ import {
 	EventEmitter
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DropdownOptionComponent } from '../dropdown-option/dropdown-option.component';
 
+import { DropdownOptionComponent } from '../dropdown-option/dropdown-option.component';
 import { animate, reciprocalEaseOutTransferFunction } from '../animation';
-import { startWith } from 'rxjs';
 
 @Component({
 	selector: 'app-dropdown',
@@ -24,20 +23,20 @@ import { startWith } from 'rxjs';
 	styleUrls: ['./dropdown.component.scss']
 })
 export class DropdownComponent implements AfterContentInit {
-	@ViewChild('optionsView') optionsView!: ElementRef<HTMLDivElement>;
-	@ViewChild('dropdownText') dropdownText!: ElementRef<HTMLDivElement>;
-	@ContentChildren(DropdownOptionComponent) options!: QueryList<DropdownOptionComponent>;
+	@ViewChild('optionsView') private optionsView!: ElementRef<HTMLDivElement>;
+	@ViewChild('dropdownText') private dropdownText!: ElementRef<HTMLDivElement>;
+	@ContentChildren(DropdownOptionComponent) private options!: QueryList<DropdownOptionComponent>;
 	
 	@Input() placeholder: string = '';
 
 	@Output() selectionChange = new EventEmitter<DropdownOptionComponent>();
 
 	selectedOption?: DropdownOptionComponent;
-	isOpen: boolean = false;
+	private isOpen: boolean = false;
 
-	// Used to tell whether a click is outside or inside the dropdown.
+	// Is used to tell whether a click is outside or inside the dropdown.
 	// Outside always closes it while inside toggles it.
-	wasClicked: boolean = false;
+	private wasClicked: boolean = false;
 
 	toggle(event: MouseEvent): void {
 		this.isOpen = !this.isOpen;
@@ -63,19 +62,35 @@ export class DropdownComponent implements AfterContentInit {
 	ngAfterContentInit(): void {
 		this.options.changes.subscribe((options: QueryList<DropdownOptionComponent>) => {
 			let index = 0;
-			options.forEach((option: DropdownOptionComponent) => {
+			for (const option of options) {
 				option.dropdown = this;
 				option.index = index++;
-			});
+			}
 		});
 	}
 
-	select(option: DropdownOptionComponent): void {
-		this.selectedOption = option;
-		this.dropdownText.nativeElement.innerText = option.text;
-		this.dropdownText.nativeElement.classList.remove('placeholder');
-		this.selectionChange.emit(option);
+	select(option: DropdownOptionComponent | string): void {
+		if (option instanceof DropdownOptionComponent) {
+			this.selectedOption = option;
+			this.dropdownText.nativeElement.innerText = option.text;
+			this.dropdownText.nativeElement.classList.remove('placeholder');
+			this.selectionChange.emit(option);
+		}
+		else {
+			console.log(this.options.length);
+			const foundOption = this.options.find(item => item.text == option);
+			if (foundOption) {
+				this.select(foundOption);
+			}
+			else {
+				console.log('Heck');
+			}
+		}
 	}
+
+	// select(optionText: string): void {
+
+	// }
 
 	removeSelection(): void {
 		this.dropdownText.nativeElement.innerText = this.placeholder;
