@@ -9,6 +9,8 @@ import { DropdownComponent } from '../dropdown/dropdown.component';
 import { DropdownOptionComponent } from '../dropdown-option/dropdown-option.component';
 import { RippleDirective } from '../ripple.directive';
 
+//----------------------------------------------------------------
+
 // Could do a binary search but there is no reason to for this use case (less than 1k elements).
 function insertSortedArray<T>(array: T[], toInsert: T): void {
 	const insertIndex = array.findIndex(element => element > toInsert);
@@ -39,9 +41,7 @@ export class AddLanguageComponent implements AfterViewInit {
 	
 	ngAfterViewInit(): void {
 		// Populate the dropdowns with language options.
-		invoke<string[]>('get_language_list', {}).then(languages => {
-			this.languageOptions = languages;
-		});
+		invoke<string[]>('get_language_list').then(languages => this.languageOptions = languages);
 	}
 
 	selectTargetLanguage(option: DropdownOptionComponent): void {

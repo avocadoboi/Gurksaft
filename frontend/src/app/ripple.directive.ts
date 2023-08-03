@@ -2,6 +2,8 @@ import { Directive, ElementRef, HostListener, Input } from '@angular/core';
 
 import { animate, reciprocalEaseOutTransferFunction } from './animation';
 
+//----------------------------------------------------------------
+
 class RippleInstance {
 	private element: HTMLDivElement;
 
@@ -39,7 +41,7 @@ class RippleInstance {
 }
 
 function getCssColor(name: string, alpha: number = 1): string {
-	return `rgb(${getComputedStyle(document.documentElement).getPropertyValue(name)}, ${alpha})`;
+	return `oklch(${getComputedStyle(document.documentElement).getPropertyValue(name)} / ${alpha})`;
 }
 
 @Directive({
@@ -65,18 +67,22 @@ export class RippleDirective {
 		this.element.appendChild(this.overlay);
 	}
 
-	@HostListener('mouseenter') showHoverOverlay(): void {
+	@HostListener('mouseenter') 
+	private showHoverOverlay(): void {
 		this.overlay.style.backgroundColor = this.getColor();
 	}
-	@HostListener('mouseleave') hideHoverOverlay(): void {
+	@HostListener('mouseleave') 
+	private hideHoverOverlay(): void {
 		this.overlay.style.backgroundColor = 'transparent';
 	}
 
-	@HostListener('mousedown', ['$event']) addRipple(event: MouseEvent): void {
+	@HostListener('mousedown', ['$event']) 
+	private addRipple(event: MouseEvent): void {
 		this.rippleInstance?.remove();
 		this.rippleInstance = new RippleInstance(this.element, event, this.getColor());
 	}
-	@HostListener('document:mouseup') fadeRipple(): void {
+	@HostListener('document:mouseup') 
+	private fadeRipple(): void {
 		this.rippleInstance?.fadeAway();
 	}
 	

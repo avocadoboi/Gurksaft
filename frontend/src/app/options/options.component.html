@@ -1,32 +1,26 @@
-<h1>Options</h1>
+<div class="header-bar">
+	<h1>Options</h1>
+	<button appRipple="neutral-90" class="back-button material-symbols" routerLink="/learn">arrow_back</button>
+</div>
 <div>
-	<h3>Language:</h3>
+	<h3>Language</h3>
 
-	<app-dropdown #languageDropdown placeholder="Choose language">
+	<app-dropdown #languageDropdown placeholder="Choose language" (selectionChange)="changeLanguage($event)">
 		<app-dropdown-option *ngFor="let language of savedLanguages" [value]="language">
 			{{language}}
 		</app-dropdown-option>
 	</app-dropdown>
-	<!-- <div class="select">
-		<select id="language-dropdown" required>
-			<option value="" disabled selected>Choose language</option>
-		</select>
-	</div> -->
-	<button appRipple="secondary" id="add-language-button" class="material-symbols" routerLink="/add-language">
-		add
+	<button appRipple="primary-60" id="add-language-button" routerLink="/add-language">
+		<span class="material-symbols">add</span>Add
 	</button>
 </div>
 <div>
-	<h3>Success weight factor:</h3>
-	<input id="success-weight-factor-input" type="number">
+	<h3>Success weight factor</h3>
+	<input id="success-weight-factor-input" type="number" inputmode="numeric" [(ngModel)]="weightFactors.succeeded" (change)="setSuccessWeight()"/>
 </div>
 <div>
-	<h3>Failure weight factor:</h3>
-	<input id="failure-weight-factor-input" type="number">
+	<h3>Failure weight factor</h3>
+	<input id="failure-weight-factor-input" type="number" [(ngModel)]="weightFactors.failed" (change)="setFailureWeight()">
 </div>
-<!-- <h2 id="weight-visualization-header">Weight visualization</h2>
-<div>
-	<canvas></canvas>
-</div> -->
 
-<button appRipple="secondary-foreground" id="back-button" routerLink="/learn">Back</button>
+<!-- <button appRipple="primary-foreground" id="back-button" routerLink="/learn">Back</button> -->

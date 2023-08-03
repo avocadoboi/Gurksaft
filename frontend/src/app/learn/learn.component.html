@@ -1,13 +1,13 @@
-<div id="task-header">
+<div class="header-bar">
 	<h1>Task</h1>
-	<button appRipple="secondary" id="statistics-button" class="material-symbols">monitoring</button>
-	<button appRipple="highlight" id="options-button" class="material-symbols" routerLink="/options">settings</button>
+	<button appRipple="primary-60" id="statistics-button" class="outline-button" routerLink="/statistics"><span class="material-symbols">bar_chart</span>Statistics</button>
+	<button appRipple="primary-60" id="options-button" class="outline-button" routerLink="/options"><span class="material-symbols">settings</span>Options</button>
 </div>
 
 <div id="phrase-header">
 	<h2>Phrase</h2>
-	<button appRipple="bad" id="delete-phrase-button" class="bad-button">Delete phrase</button>
-	<button appRipple="bad" id="delete-word-button" class="bad-button">Delete word</button>
+	<button appRipple="bad-60" class="bad-button"><span class="material-symbols">delete_forever</span>Delete phrase</button>
+	<button appRipple="bad-60" class="bad-button"><span class="material-symbols">delete_forever</span>Delete word</button>
 </div>
 
 <div id="original-text">
@@ -20,7 +20,8 @@
 	</div>
 	<p>{{postInputText}}</p>
 </div>
-<button appRipple id="next-button" class="accent-button" (click)="continue()">
+<!-- <button appRipple id="next-button" (click)="continue()"> -->
+<button appRipple="secondary-90" id="next-button" class="secondary-button" (click)="continue()">
 	{{buttonText}}
 </button>
 <h2>Translations</h2>

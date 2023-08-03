@@ -7,7 +7,7 @@ pub struct Language {
 	pub name: &'static str,
 	// Two-letter ISO 639-1 language code.
 	pub id_2: &'static str,
-	// Three-letter ISO 639-2 language code.
+	// Three-letter ISO 639-3 language code.
 	pub id_3: &'static str,
 }
 
@@ -175,7 +175,7 @@ pub const LANGUAGES: &[Language] = &[
 	Language {
 		name: "Latvian",
 		id_2: "lv",
-		id_3: "lav",
+		id_3: "lat",
 	},
 	Language {
 		name: "Lithuanian",
@@ -190,7 +190,7 @@ pub const LANGUAGES: &[Language] = &[
 	Language {
 		name: "Malay",
 		id_2: "ms",
-		id_3: "msa",
+		id_3: "zsm",
 	},
 	Language {
 		name: "Malayalam",
@@ -198,14 +198,19 @@ pub const LANGUAGES: &[Language] = &[
 		id_3: "mal",
 	},
 	Language {
-		name: "Norwegian",
+		name: "Norwegian Bokmål",
 		id_2: "no",
-		id_3: "nor",
+		id_3: "nob",
+	},
+	Language {
+		name: "Norwegian Nynorsk",
+		id_2: "no",
+		id_3: "nno",
 	},
 	Language {
 		name: "Persian",
 		id_2: "fa",
-		id_3: "fas",
+		id_3: "pes",
 	},
 	Language {
 		name: "Polish",

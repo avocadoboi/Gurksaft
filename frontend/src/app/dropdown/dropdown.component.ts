@@ -15,6 +15,8 @@ import { CommonModule } from '@angular/common';
 import { DropdownOptionComponent } from '../dropdown-option/dropdown-option.component';
 import { animate, reciprocalEaseOutTransferFunction } from '../animation';
 
+//----------------------------------------------------------------
+
 @Component({
 	selector: 'app-dropdown',
 	standalone: true,
@@ -23,13 +25,20 @@ import { animate, reciprocalEaseOutTransferFunction } from '../animation';
 	styleUrls: ['./dropdown.component.scss']
 })
 export class DropdownComponent implements AfterContentInit {
-	@ViewChild('optionsView') private optionsView!: ElementRef<HTMLDivElement>;
-	@ViewChild('dropdownText') private dropdownText!: ElementRef<HTMLDivElement>;
-	@ContentChildren(DropdownOptionComponent) private options!: QueryList<DropdownOptionComponent>;
+	@ViewChild('optionsView') 
+	private optionsView!: ElementRef<HTMLDivElement>;
 	
-	@Input() placeholder: string = '';
+	@ViewChild('dropdownText') 
+	private dropdownText!: ElementRef<HTMLDivElement>;
 
-	@Output() selectionChange = new EventEmitter<DropdownOptionComponent>();
+	@ContentChildren(DropdownOptionComponent) 
+	private options!: QueryList<DropdownOptionComponent>;
+	
+	@Input() 
+	placeholder: string = '';
+
+	@Output() 
+	selectionChange = new EventEmitter<DropdownOptionComponent>();
 
 	selectedOption?: DropdownOptionComponent;
 	private isOpen: boolean = false;
@@ -38,7 +47,7 @@ export class DropdownComponent implements AfterContentInit {
 	// Outside always closes it while inside toggles it.
 	private wasClicked: boolean = false;
 
-	toggle(event: MouseEvent): void {
+	toggle(): void {
 		this.isOpen = !this.isOpen;
 		animate(t => {
 			let factor = reciprocalEaseOutTransferFunction(t, 0.75);
@@ -52,9 +61,10 @@ export class DropdownComponent implements AfterContentInit {
 		this.wasClicked = true;
 	}
 
-	@HostListener('document:click', ['event']) clickOutside(event: MouseEvent): void {
+	@HostListener('document:click') 
+	private clickOutside(): void {
 		if (this.isOpen && !this.wasClicked) {
-			this.toggle(event);
+			this.toggle();
 		}
 		this.wasClicked = false;
 	}
@@ -77,7 +87,6 @@ export class DropdownComponent implements AfterContentInit {
 			this.selectionChange.emit(option);
 		}
 		else {
-			console.log(this.options.length);
 			const foundOption = this.options.find(item => item.text == option);
 			if (foundOption) {
 				this.select(foundOption);
@@ -87,10 +96,6 @@ export class DropdownComponent implements AfterContentInit {
 			}
 		}
 	}
-
-	// select(optionText: string): void {
-
-	// }
 
 	removeSelection(): void {
 		this.dropdownText.nativeElement.innerText = this.placeholder;

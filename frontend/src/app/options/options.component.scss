@@ -1,7 +1,6 @@
 :host {
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;	
+	width: 100%;
+	max-width: 500px;
 }
 h2 {
 	text-align: center;
@@ -22,17 +21,18 @@ h3 {
 }
 
 input {
-	width: 3em;
+	width: 3.5em;
 }
 
 #add-language-button {
-	background-color: transparent;
-	color: rgb(var(--secondary));
-	border-radius: 50%;
-	border: 2px solid rgb(var(--secondary));
-	padding: 0.1em;
-	font-size: 1.1em;
-	box-shadow: none;
+	// background-color: transparent;
+	// color: oklch(var(--primary-50));
+	// border-radius: 50%;
+	// border: 1px solid oklch(var(--neutral-20));
+	// border: 2px solid oklch(var(--primary-50));
+	padding: 0.5em 1em 0.5em 0.7em;
+	font-size: 0.7em;
+	// box-shadow: none;
 }
 
 #weight-visualization-header {

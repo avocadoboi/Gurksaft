@@ -12,9 +12,11 @@ import { DropdownComponent } from '../dropdown/dropdown.component';
 	styleUrls: ['./dropdown-option.component.scss']
 })
 export class DropdownOptionComponent implements AfterViewInit {
-	@Input() value: string = '';
+	@Input() 
+	value: string = '';
 	
-	@ViewChild('content') content!: ElementRef;
+	@ViewChild('content') 
+	private content!: ElementRef;
 	text: string = '';
 
 	index: number = 0;

@@ -23,18 +23,18 @@ class TextMeasure {
 // Backend types
 
 type LearningTask = {
-	word_id: number,
-	sentence_id: number,
-	word: string,
-	word_pos: number,
-	sentence: string,
-	translations: string[],
+	word_id: number;
+	sentence_id: number;
+	word: string;
+	word_pos: number;
+	sentence: string;
+	translations: string[];
 };
 
 type FinishedTask = {
-	word_id: number,
-	sentence_id: number,
-	result: string,
+	word_id: number;
+	sentence_id: number;
+	result: string;
 };
 
 //----------------------------------------------------------------
@@ -64,14 +64,14 @@ export class LearnComponent implements AfterViewInit {
 	buttonText = '';
 	hint = '';
 
-	@ViewChild('wordInput') wordInput!: ElementRef<HTMLInputElement>;
+	@ViewChild('wordInput') 
+	private wordInput!: ElementRef<HTMLInputElement>;
 
 	constructor(private changeDetector: ChangeDetectorRef) {
 		appWindow.setTitle('Gurskaft - learn');
 	}
 
 	ngAfterViewInit(): void {
-		// document.fonts.ready.then(this.nextTask);
 		this.nextTask();
 	}
 
@@ -97,10 +97,9 @@ export class LearnComponent implements AfterViewInit {
 		}
 
 		this.wordInput.nativeElement.focus();
-		this.changeDetector.detectChanges();
 	}
 	
-	nextTask(): void {
+	private nextTask(): void {
 		invoke<LearningTask>('next_task').then(task => {
 			this.preInputText = task.sentence.substring(0, task.word_pos);
 			this.postInputText = task.sentence.substring(task.word_pos + task.word.length);
@@ -112,17 +111,18 @@ export class LearnComponent implements AfterViewInit {
 
 			wordInput.value = '';
 			wordInput.readOnly = false;
-			wordInput.style.color = 'rgb(var(--foreground-0))';
+			wordInput.style.color = 'oklch(var(--primary-90))';
 			this.hint = '';
 
 			this.buttonText = 'Check';
 
 			this.currentTask = task;
 			this.taskState = TaskState.InputWord;
+			this.changeDetector.detectChanges();
 		});
 	}
 
-	finishTask(result: TaskResult): void {
+	private finishTask(result: TaskResult): void {
 		if (!this.currentTask) {
 			return;
 		}
@@ -136,15 +136,16 @@ export class LearnComponent implements AfterViewInit {
 		invoke('finish_task', { task });
 	}
 
-	showSuccessFeedback(): void {
+	private showSuccessFeedback(): void {
 		const input = this.wordInput.nativeElement;
-		input.style.color = 'rgb(var(--good))';
+		input.style.color = 'oklch(var(--good-50))';
 		input.readOnly = true;
 		this.buttonText = 'Next';
 		this.taskState = TaskState.Feedback;
+		this.changeDetector.detectChanges();
 	}
 
-	retry(): void {
+	private retry(): void {
 		if (!this.currentTask) {
 			return;
 		}
@@ -161,9 +162,9 @@ export class LearnComponent implements AfterViewInit {
 				pos++;
 			}
 		}
-		console.log(hint);
 		this.hint = hint;
 		this.wordInput.nativeElement.value = "";
+		this.changeDetector.detectChanges();
 	}
 
 	handleInputKeyUp(event: KeyboardEvent): void {

@@ -1,5 +1,9 @@
 
-use crate::{learning_data, learning_data::LearningData};
+use crate::{
+	learning_data, 
+	learning_data::LearningData, 
+	learning_data::LearningWord, 
+};
 use crate::{options, options::Options};
 use crate::{source_data, source_data::SourceData};
 
@@ -78,6 +82,19 @@ async fn set_current_language(app: tauri::AppHandle, language_name: String) {
 	}
 }
 
+#[tauri::command]
+async fn download_language_data(app: tauri::AppHandle, window: tauri::Window, info: source_data::SourceDataInfo) {
+	let source_data = SourceData::download(info, |status| {
+		window.emit("download_status", &status).unwrap();
+	}).await;
+
+	window.emit("download_status", &source_data::SourceDataDownloadStatus::Loading).unwrap();
+
+	add_new_language_data(&app, source_data);
+
+	window.emit("download_status", &source_data::SourceDataDownloadStatus::Finished).unwrap();
+}
+
 fn add_new_language_data(app: &tauri::AppHandle, source_data: SourceData) {
 	if let Some(state) = app.try_state::<AppState>() {
 		let mut options = state.options.lock().unwrap();
@@ -107,16 +124,29 @@ fn add_new_language_data(app: &tauri::AppHandle, source_data: SourceData) {
 }
 
 #[tauri::command]
-async fn download_language_data(app: tauri::AppHandle, window: tauri::Window, info: source_data::SourceDataInfo) {
-	let source_data = SourceData::download(info, |status| {
-		window.emit("download_status", &status).unwrap();
-	}).await;
+fn get_weights(state: tauri::State<AppState>) -> Vec<LearningWord> {
+	state.learning_data.lock().unwrap().words().0.clone()
+}
 
-	window.emit("download_status", &source_data::SourceDataDownloadStatus::Loading).unwrap();
-
-	add_new_language_data(&app, source_data);
-
-	window.emit("download_status", &source_data::SourceDataDownloadStatus::Finished).unwrap();
+pub fn run() {
+	tauri::Builder::default()
+		.setup(|app| { start_app(app); Ok(()) })
+		.invoke_handler(tauri::generate_handler![
+			download_language_data,
+			finish_task,
+			get_current_language,
+			get_language_list,
+			get_saved_language_list,
+			get_weights,
+			get_weight_factors,
+			next_task, 
+			set_current_language,
+			set_failure_weight_factor,
+			set_success_weight_factor,
+		])
+		.on_window_event(handle_window_event)
+		.run(tauri::generate_context!())
+		.unwrap();
 }
 
 fn start_app(app: &tauri::App) {
@@ -146,24 +176,4 @@ fn handle_window_event(event: tauri::GlobalWindowEvent) {
 			app.save();
 		}
 	}
-}
-
-pub fn run() {
-	tauri::Builder::default()
-		.setup(|app| { start_app(app); Ok(()) })
-		.invoke_handler(tauri::generate_handler![
-			get_language_list,
-			download_language_data,
-			next_task, 
-			finish_task,
-			get_saved_language_list,
-			get_current_language,
-			set_current_language,
-			get_weight_factors,
-			set_success_weight_factor,
-			set_failure_weight_factor
-		])
-		.on_window_event(handle_window_event)
-		.run(tauri::generate_context!())
-		.unwrap();
 }

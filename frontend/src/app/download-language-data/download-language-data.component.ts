@@ -1,8 +1,8 @@
-import { ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, NgZone, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
-import { invoke, event } from '@tauri-apps/api';
+import { event } from '@tauri-apps/api';
 import { appWindow } from '@tauri-apps/api/window';
 
 @Component({
@@ -15,7 +15,7 @@ import { appWindow } from '@tauri-apps/api/window';
 export class DownloadLanguageDataComponent {
 	statusMessage: string = 'Loading...';
 	
-	constructor(private router: Router, private changeDetector: ChangeDetectorRef) { 
+	constructor(private router: Router, private changeDetector: ChangeDetectorRef, private zone: NgZone) { 
 		appWindow.setTitle('Gurksaft - downloading data');
 		
 		const progress_to_string = (progress: number) => 
@@ -38,7 +38,7 @@ export class DownloadLanguageDataComponent {
 				this.statusMessage = "Parsing data...";
 			}
 			else if (event.payload == 'Finished') {
-				router.navigate(['learn']);
+				zone.run(() => router.navigate(['learn']));
 			}
 			else {
 				console.error(JSON.stringify(event));

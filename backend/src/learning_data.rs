@@ -17,8 +17,8 @@ const MAX_SENTENCE_LEN: usize = 100;
 
 //----------------------------------------------------------------
 
-#[derive(Debug, Serialize, Deserialize)]
-struct LearningWord {
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct LearningWord {
 	word: String,
 	weight: f64,
 }
@@ -35,7 +35,7 @@ impl LearningWord {
 //----------------------------------------------------------------
 
 #[derive(Deserialize, Serialize)]
-struct LearningWords(Vec<LearningWord>);
+pub struct LearningWords(pub Vec<LearningWord>);
 
 impl LearningWords {	
 	fn load_from_source_data(data: &[u8]) -> Self {
@@ -144,7 +144,11 @@ pub struct LearningData {
 	sentences: LearningSentences,
 }
 
-impl LearningData {	
+impl LearningData {
+	pub fn words(&self) -> &LearningWords {
+		&self.words
+	}
+	
 	pub fn next_task(&mut self) -> LearningTask {
 		loop {
 			let word_id = self.word_weighted_index.sample(&mut thread_rng());

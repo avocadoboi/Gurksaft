@@ -1,43 +1,67 @@
 // Global styles
 
 @use 'global';
+@use 'sass:math';
 
 // These are the theme colors written as RGB triplets.
 // Allows for changing the alpha like so:
-// rgb(var(--accent), 0.1)
+// oklch(var(--some-color), 0.1)
+
+// @function srgb-to-linear($channel) {
+	
+// }
+
+// @function calculate-perceived-lightness($red, $green, $blue) {
+	
+// }
+
+// Generates a value between 0 and 255 where $percentage between 0 and 50 gives a value linearly faded from 0 to $mid and $percentage between 50 and 100 gives a value faded from $mid to 255.
+// @function generate-tone-channel($mid, $percentage) {
+// 	@if $percentage <= 50 {
+// 		@return calc($mid*$percentage/50);
+// 	}
+// 	@return calc($mid + (255 - $mid)*($percentage - 50)/50);
+// }
+
+@mixin generate-tones($name, $chroma, $hue, $is-light) {
+	@each $percentage in 0, 1, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 99, 100 {
+		$lightness: $percentage;
+		@if $is-light {
+			$lightness: 100 - $percentage;
+		}
+
+		--#{$name}-#{$percentage}: #{$lightness}% #{$chroma} #{$hue};
+		//#{generate-tone-channel($red, $percentage)}, #{generate-tone-channel($green, $percentage)}, #{generate-tone-channel($blue, $percentage)};
+	}
+}
+
+@mixin generate-theme($is-light) {
+	@include generate-tones(neutral, 0.05, 305, $is-light);
+	@include generate-tones(primary, 0.2, 305, $is-light);
+	@include generate-tones(secondary, 0.1, 225, $is-light);
+	@include generate-tones(bad, 0.2, 20, $is-light);
+	@include generate-tones(good, 0.1, 143, $is-light);
+}
 
 :root {
-	--background-0: 30, 30, 30;
-	--background-1: 40, 40, 40;
-	--foreground-0: 255, 255, 255;
-	--highlight: 210, 230, 255;
-	--shadow-opacity: 0.7;
-	--gray: 50, 50, 50;
+	@include generate-theme(false);
 	
-	--accent: 234, 255, 0;
-	--accent-foreground: 0, 0, 0;
-	--secondary: 80, 37, 255;
-	// --secondary: 68, 37, 224;
-	--secondary-foreground: 255, 255, 255;
-	--bad: 255, 24, 105;
-	--good: 24, 255, 80;
+	// --highlight: 210, 230, 255;
+	--shadow-opacity: 0.5;
 }
 
 @media (prefers-color-scheme: light) {
 	:root {
-		--background-0: 255, 255, 255;
-		--background-1: 250, 250, 250;
-		--foreground-0: 0, 0, 0;
-		--highlight: 0, 0, 0;
-		--shadow-opacity: 0.4;
-		--gray: 40, 40, 40;
-		--good: 0, 230, 90;
+		@include generate-theme(true);
+	
+		// --highlight: 0, 0, 0;
+		--shadow-opacity: 0.3;
 	}
 }
 
 @font-face {
-	font-family: roboto;
-	src: url(assets/Roboto-Regular.ttf);
+	font-family: jost;
+	src: url(assets/Jost-VariableFont_wght.ttf);
 }
 
 @font-face {
@@ -51,7 +75,7 @@
 	font-family: 'Material Symbols Outlined';
 	font-weight: normal;
 	font-style: normal;
-	font-size: 24px;
+	font-size: 1.1em;
 	line-height: 1;
 	letter-spacing: normal;
 	text-transform: none;
@@ -83,10 +107,10 @@ body {
 	flex-direction: column;
 	align-items: center;
 
-	background-color: rgb(var(--background-0));
+	background-color: oklch(var(--primary-10));
 	
-	color: rgb(var(--foreground-0));
-	font-family: roboto;
+	color: oklch(var(--primary-95));
+	font-family: jost;
 	font-size: 1.3em;
 	cursor: default;
 	user-select: none;
@@ -118,52 +142,68 @@ p {
 }
 
 button {
-	background-color: rgb(var(--secondary));
-	color: white;
-	border-radius: 0.3em;
+	background-color: oklch(var(--primary-30));
+	color: oklch(var(--primary-90));
+	border-radius: 2em;
 	border: none;
 	cursor: pointer;
-	padding: 0.45em 0.8em;
+	padding: 0.45em 1em;
 	
-	font-family: roboto;
+	font-family: jost;
 	font-weight: 500;
 	font-size: 1em;
-	box-shadow: 0px 1px 4px rgb(0, 0, 0, var(--shadow-opacity));
+	box-shadow: 0px 1px 4px oklch(0, 0, 0, var(--shadow-opacity));
+	transition: box-shadow 200ms global.$ease-in-out;
+
+	display: flex;
+	flex-direction: row;
+	align-items:center;
+	gap: 0.4em;
+}
+button:hover {
+	box-shadow: 0px 1.5px 6px oklch(0, 0, 0, var(--shadow-opacity));
 }
 
 button:disabled {
-	background-color: rgb(var(--foreground-0), 0.2);
+	background-color: oklch(var(--neutral-20));
+	color: oklch(var(--neutral-80));
 	opacity: 0.6;
 	cursor: default;
 }
 
-.accent-button {
-	background-color: rgb(var(--accent));
+.outline-button {
+	background-color: transparent;
+	color: oklch(var(--primary-60));
+	border: 1px solid oklch(var(--neutral-20));
+	box-shadow: none;
+	// font-weight: 600;
+}
+.outline-button:hover, .bad-button:hover {
+	box-shadow: 0px 1px 2px oklch(0, 0, 0, 10%);
+}
+
+.secondary-button {
+	background-color: oklch(var(--secondary-30));
 	border: none;
-	color: rgb(var(--accent-foreground));
+	color: oklch(var(--secondary-90));
 }
 
 .bad-button {
-	background-color: transparent;
-	color: rgb(var(--bad));
-	border: 1px solid rgb(var(--bad));
+	background-color: transparent;//oklch(var(--bad-10));
+	color: oklch(var(--bad-50));
+	border: 1px solid oklch(var(--neutral-20));
 	box-shadow: none;
-}
-
-button > svg {
-	width: 1em;
-	height: 1em;
 }
 
 input {
 	background-color: transparent;
-	color: rgb(var(--foreground-0));
+	color: oklch(var(--primary-90));
 	outline: none;
 	border: none;
-	border-bottom: 2px solid rgb(var(--secondary));
+	border-bottom: 2.5px solid oklch(var(--primary-50));
 	width: 3em;
 
-	font-family: roboto;
+	font-family: jost;
 	font-size: 1em;
 }
 
@@ -179,7 +219,7 @@ input[type=number] {
 }
 
 .good {
-    color: rgb(var(--good));
+    color: oklch(var(--good-50));
 }
 
 .hover-overlay {
@@ -200,4 +240,35 @@ input[type=number] {
 	transition: background-color 900ms global.$ease-in-out;//,
 		//transform 700ms cubic-bezier(0.05, 0.95, 0, 1);
 	opacity: 0.3;
+}
+
+.header-bar {
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	gap: 0.6em;
+	align-items: center;
+	margin-bottom: 1.5em;
+}
+.header-bar > h1 {
+	text-align: left;
+	margin: 0;
+	width: auto;
+	flex-grow: 1;
+}
+.header-bar > button {
+	font-size: 0.8em;
+}
+
+.header-bar > .back-button {
+	background-color: transparent;
+    border: 1px solid oklch(var(--neutral-20));
+    border-radius: 50%;
+    padding: 0.2em;
+    font-size: 1.7em;
+	// box-shadow: 0 0.5px 2px oklch(0, 0, 0, 0.2);
+    box-shadow: none;
+	// color: oklch(var(--primary));
+	// background-color: oklch(var(--neutral-10));
+	color: oklch(var(--neutral-90));
 }
