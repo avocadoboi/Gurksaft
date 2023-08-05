@@ -1,9 +1,20 @@
 :host {
-	
-}
-
-
-
-#header-bar {
 	display: flex;
+	flex-direction: column;
+	width: 100%;
+	padding: 1em 2em;
+	max-width: 50em;
 }
+
+p {
+	color: oklch(var(--on-surface-variant));
+	margin-bottom: 1em;
+}
+
+
+// canvas {
+// 	align-self: center;
+// 	// -self: center;
+// 	// width: 100%;
+// 	max-width: 800px;
+// }

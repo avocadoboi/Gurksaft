@@ -54,6 +54,13 @@
 				"startDragging": false,
 				"unmaximize": false,
 				"unminimize": false
+			},
+			"shell": {
+				"all": false,
+				"execute": false,
+				"open": true,
+				"scope": [],
+				"sidecar": false
 			}
 		},
 		"bundle": {

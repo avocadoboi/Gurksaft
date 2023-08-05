@@ -41,13 +41,11 @@ export class OptionsComponent implements AfterViewInit {
 	}
 	
 	ngAfterViewInit(): void {
-		console.log("Gettin languages!!!!");
 		invoke<string[]>('get_saved_language_list').then(languages => {
 			this.savedLanguages = languages;
 			this.changeDetector.detectChanges();
 	
 			invoke<string>('get_current_language').then(language => {
-				console.log(language);
 				this.languageDropdown.select(language);
 				this.changeDetector.detectChanges();
 			});

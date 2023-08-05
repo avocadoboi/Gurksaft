@@ -24,3 +24,7 @@ export function animate(callback: (normalizedTime: number) => void, duration: nu
 	};
 	frame(startTime);
 }
+
+export function getPaletteColor(name: string, alpha: number = 1): string {
+	return `oklch(${getComputedStyle(document.documentElement).getPropertyValue(`--${name}`)} / ${alpha})`;
+}

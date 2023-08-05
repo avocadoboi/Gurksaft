@@ -13,14 +13,15 @@ import {
 import { CommonModule } from '@angular/common';
 
 import { DropdownOptionComponent } from '../dropdown-option/dropdown-option.component';
-import { animate, reciprocalEaseOutTransferFunction } from '../animation';
+import { animate, reciprocalEaseOutTransferFunction } from '../common';
+import { RippleDirective } from '../ripple.directive';
 
 //----------------------------------------------------------------
 
 @Component({
 	selector: 'app-dropdown',
 	standalone: true,
-	imports: [CommonModule, DropdownOptionComponent],
+	imports: [CommonModule, DropdownOptionComponent, RippleDirective],
 	templateUrl: './dropdown.component.html',
 	styleUrls: ['./dropdown.component.scss']
 })

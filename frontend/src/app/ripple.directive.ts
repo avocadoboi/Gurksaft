@@ -1,6 +1,6 @@
 import { Directive, ElementRef, HostListener, Input } from '@angular/core';
 
-import { animate, reciprocalEaseOutTransferFunction } from './animation';
+import { animate, getPaletteColor, reciprocalEaseOutTransferFunction } from './common';
 
 //----------------------------------------------------------------
 
@@ -13,6 +13,7 @@ class RippleInstance {
 		this.element.style.borderRadius = '50%';
 		this.element.style.backgroundColor = color;
 	
+
 		const [x, y, width, height] = 
 			[event.offsetX, event.offsetY, parent.clientWidth, parent.clientHeight];
 		
@@ -38,10 +39,6 @@ class RippleInstance {
 	remove(): void {
 		this.element.remove();
 	}
-}
-
-function getCssColor(name: string, alpha: number = 1): string {
-	return `oklch(${getComputedStyle(document.documentElement).getPropertyValue(name)} / ${alpha})`;
 }
 
 @Directive({
@@ -88,7 +85,7 @@ export class RippleDirective {
 	
 	getColor(): string {
 		if (this.appRipple) {
-			return getCssColor(`--${this.appRipple}`);
+			return getPaletteColor(this.appRipple);
 		}
 		return 'black';
 	}

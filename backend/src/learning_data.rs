@@ -19,8 +19,8 @@ const MAX_SENTENCE_LEN: usize = 100;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct LearningWord {
-	word: String,
-	weight: f64,
+	pub word: String,
+	pub weight: f64,
 }
 
 impl LearningWord {

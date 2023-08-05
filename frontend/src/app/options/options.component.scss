@@ -1,6 +1,8 @@
 :host {
-	width: 100%;
-	max-width: 500px;
+	// width: 100%;
+	// max-width: 40em;
+	width: 25em;
+	padding: 1em;
 }
 h2 {
 	text-align: center;
@@ -12,16 +14,27 @@ h3 {
 	margin-right: 0.5em;
 }
 
-:host > div {
+.content {
+	gap: 1em;
+}
+.content > div {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 	gap: 0.5em;
-	margin-bottom: 1.3em;
 }
 
 input {
 	width: 3.5em;
+}
+
+hr {
+	height: 1px;
+	width: 100%;
+	border: none;
+	margin: 0;
+	align-self: center;
+	background-color: oklch(var(--outline-variant));
 }
 
 #add-language-button {
@@ -31,15 +44,6 @@ input {
 	// border: 1px solid oklch(var(--neutral-20));
 	// border: 2px solid oklch(var(--primary-50));
 	padding: 0.5em 1em 0.5em 0.7em;
-	font-size: 0.7em;
+	font-size: 0.65em;
 	// box-shadow: none;
-}
-
-#weight-visualization-header {
-	margin-top: 0.5em;
-}
-
-#back-button {
-	align-self: center;
-	margin-top: 0.5em;
 }

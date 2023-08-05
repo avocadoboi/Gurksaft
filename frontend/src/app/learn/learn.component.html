@@ -1,34 +1,36 @@
 <div class="header-bar">
-	<h1>Task</h1>
-	<button appRipple="primary-60" id="statistics-button" class="outline-button" routerLink="/statistics"><span class="material-symbols">bar_chart</span>Statistics</button>
-	<button appRipple="primary-60" id="options-button" class="outline-button" routerLink="/options"><span class="material-symbols">settings</span>Options</button>
+	<h1>Learn</h1>
+	<button appRipple="primary" id="statistics-button" class="outline-button" routerLink="/statistics"><span class="material-symbols">bar_chart</span>Statistics</button>
+	<button appRipple="primary" id="options-button" class="outline-button" routerLink="/options"><span class="material-symbols">settings</span>Options</button>
 </div>
 
-<div id="phrase-header">
-	<h2>Phrase</h2>
-	<button appRipple="bad-60" class="bad-button"><span class="material-symbols">delete_forever</span>Delete phrase</button>
-	<button appRipple="bad-60" class="bad-button"><span class="material-symbols">delete_forever</span>Delete word</button>
-</div>
-
-<div id="original-text">
-	<p>{{preInputText}}</p>
-	<div id="word-input-wrapper">
-		<div id="word-input-hint" [innerHTML]="hint"></div>
-		<input #wordInput id="word-input" value="" autofocus
-			(keyup)="handleInputKeyUp($event)"
-			(input)="hint = ''">
+<div class="content">
+	<div id="phrase-header">
+		<h2>Phrase</h2>
+		<button appRipple="bad" class="bad-button"><span class="material-symbols">delete_forever</span>Delete phrase</button>
+		<button appRipple="bad" class="bad-button"><span class="material-symbols">delete_forever</span>Delete word</button>
 	</div>
-	<p>{{postInputText}}</p>
-</div>
-<!-- <button appRipple id="next-button" (click)="continue()"> -->
-<button appRipple="secondary-90" id="next-button" class="secondary-button" (click)="continue()">
-	{{buttonText}}
-</button>
-<h2>Translations</h2>
-<div id="translations">
-	<ul *ngIf="currentTask">
-		<li *ngFor="let translation of currentTask.translations">
-			{{translation}}
-		</li>
-	</ul>
+
+	<div id="original-text">
+		<p>{{preInputText}}</p>
+		<div id="word-input-wrapper">
+			<div id="word-input-hint" [innerHTML]="hint"></div>
+			<input #wordInput id="word-input" value="" autofocus
+			(keyup)="handleInputKeyUp($event)"
+				(input)="hint = ''">
+		</div>
+		<p>{{postInputText}}</p>
+	</div>
+	<!-- <button appRipple id="next-button" (click)="continue()"> -->
+		<button appRipple="on-tertiary-container" id="next-button" class="tertiary-button" (click)="continue()">
+		{{buttonText}}
+	</button>
+	<h2>Translations</h2>
+	<div id="translations">
+		<ul *ngIf="currentTask">
+			<li *ngFor="let translation of currentTask.translations">
+				{{translation}}
+			</li>
+		</ul>
+	</div>
 </div>

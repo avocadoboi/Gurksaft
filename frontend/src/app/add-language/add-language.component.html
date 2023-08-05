@@ -1,43 +1,45 @@
 <div class="header-bar">
 	<h1>Add language</h1>
-	<button appRipple="neutral-90" class="back-button material-symbols" routerLink="/learn" disabled>arrow_back</button>
+	<button appRipple="primary" class="back-button material-symbols" routerLink="/learn" disabled>arrow_back</button>
 
 </div>
-		
-<div id="target-language">
-	<h3>Target language</h3>
-	<app-dropdown
-		placeholder="Choose language" 
-		(selectionChange)="selectTargetLanguage($event)">
-		<app-dropdown-option *ngFor="let language of languageOptions" [value]="language">
-			{{language}}
-		</app-dropdown-option>
-	</app-dropdown>
-</div>
 
-<div id="translation-languages">
-	<h3>Translation languages</h3>
-	<app-dropdown placeholder="Add language" 
-		(selectionChange)="selectTranslationLanguage($event)">
-		<app-dropdown-option *ngFor="let language of languageOptions" [value]="language">
-			{{language}}
-		</app-dropdown-option>
-	</app-dropdown>
-</div>
-<div id="translation-language-list">
-	<div *ngFor="let language of translationLanguages">
-		{{language}}
-		<button appRipple="bad-50" 
-			class="remove-translation-language-button bad-button material-symbols" 
-			(click)="removeTranslationLanguage($event)">
-			remove
-		</button>
+<div class="content">
+	<div id="target-language">
+		<h3>Target language</h3>
+		<app-dropdown
+			placeholder="Choose language" 
+			(selectionChange)="selectTargetLanguage($event)">
+			<app-dropdown-option *ngFor="let language of languageOptions" [value]="language">
+				{{language}}
+			</app-dropdown-option>
+		</app-dropdown>
 	</div>
+	
+	<div id="translation-languages">
+		<h3>Translation languages</h3>
+		<app-dropdown placeholder="Add language" 
+			(selectionChange)="selectTranslationLanguage($event)">
+			<app-dropdown-option *ngFor="let language of languageOptions" [value]="language">
+				{{language}}
+			</app-dropdown-option>
+		</app-dropdown>
+	</div>
+	<div id="translation-language-list">
+		<div *ngFor="let language of translationLanguages">
+			{{language}}
+			<button appRipple="bad" 
+				class="remove-translation-language-button bad-button material-symbols" 
+				(click)="removeTranslationLanguage($event)">
+				remove
+			</button>
+		</div>
+	</div>
+	<button appRipple="on-tertiary-container"
+		class="tertiary-button"
+		id="download-button" 
+		(click)="download()" 
+		[disabled]="!(targetLanguage && translationLanguages.length)">
+		Download data
+	</button>
 </div>
-<button appRipple="secondary-90"
-	class="secondary-button"
-	id="download-button" 
-	(click)="download()" 
-	[disabled]="!(targetLanguage && translationLanguages.length)">
-	Download data
-</button>

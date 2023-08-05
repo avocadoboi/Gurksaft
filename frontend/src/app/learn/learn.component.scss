@@ -4,6 +4,8 @@
 	align-items: flex-start;
 	min-width: 20em;
 	width: 100%;
+	max-width: 40em;
+	padding: 1em;
 }
 
 #task {
@@ -32,7 +34,7 @@
 	align-items: center;
 	gap: 0.5em;
 	width: 100%;
-	margin-bottom: 24px;
+	margin-bottom: 1.2em;
 }
 #phrase-header h2 {
 	flex-grow: 1;
@@ -62,18 +64,19 @@
 	bottom: 0;
 	width: 100%;
 	height: 100%;
-	color: oklch(var(--bad-50));
+	color: oklch(var(--bad));
 	// opacity: 0.;
 	pointer-events: none;
 }
 #word-input {
 	margin: 0;
-	padding: 0;
+	// padding: 0;
+	padding: 0 0.25em;
 }
 
 #next-button {
 	align-self: center;
-	margin-top: 1.5em;
+	margin-top: 1.2em;
 	margin-bottom: 1em;
 }
 

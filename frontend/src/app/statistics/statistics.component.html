@@ -1,8 +1,10 @@
 <div class="header-bar">
 	<h1>Statistics</h1>
-	<button appRipple="neutral-90" class="back-button material-symbols" routerLink="/learn">arrow_back</button>
+	<button appRipple="primary" class="back-button material-symbols" routerLink="/learn">arrow_back</button>
 </div>
 
-<h2>Weight distribution</h2>
-
-<app-weight-distribution></app-weight-distribution>
+<div class="content">
+	<h2>Weight distribution</h2>
+	<p>Each word in the target language has a weight which determines how likely it is to be tested on you. Initially these weights are based on word frequency data taken from <a href="https://github.com/hermitdave/FrequencyWords" target="_blank">a dataset</a>, but the weights are adjusted over time as you learn.</p>
+	<app-weight-distribution></app-weight-distribution>
+</div>

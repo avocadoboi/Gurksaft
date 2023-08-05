@@ -111,7 +111,7 @@ export class LearnComponent implements AfterViewInit {
 
 			wordInput.value = '';
 			wordInput.readOnly = false;
-			wordInput.style.color = 'oklch(var(--primary-90))';
+			wordInput.style.color = 'oklch(var(--on-surface))';
 			this.hint = '';
 
 			this.buttonText = 'Check';
@@ -138,7 +138,7 @@ export class LearnComponent implements AfterViewInit {
 
 	private showSuccessFeedback(): void {
 		const input = this.wordInput.nativeElement;
-		input.style.color = 'oklch(var(--good-50))';
+		input.style.color = 'oklch(var(--good))';
 		input.readOnly = true;
 		this.buttonText = 'Next';
 		this.taskState = TaskState.Feedback;

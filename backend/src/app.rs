@@ -11,6 +11,8 @@ use std::sync::Mutex;
 
 use tauri::Manager;
 
+use serde::{Serialize, Deserialize};
+
 //----------------------------------------------------------------
 
 struct AppState {
@@ -123,9 +125,23 @@ fn add_new_language_data(app: &tauri::AppHandle, source_data: SourceData) {
 	}
 }
 
+#[derive(Serialize, Deserialize)]
+struct Weights {
+	words: Vec<LearningWord>,
+	max_weight: f64
+}
+
 #[tauri::command]
-fn get_weights(state: tauri::State<AppState>) -> Vec<LearningWord> {
-	state.learning_data.lock().unwrap().words().0.clone()
+fn get_weights(state: tauri::State<AppState>) -> Weights {
+	let learning_data = state.learning_data.lock().unwrap();
+	let words = &learning_data.words().0;
+
+	Weights {
+		words: words.clone(),
+		max_weight: words.iter()
+			.max_by(|&a, &b| a.weight.total_cmp(&b.weight))
+			.map_or(1., |word| word.weight)
+	}
 }
 
 pub fn run() {

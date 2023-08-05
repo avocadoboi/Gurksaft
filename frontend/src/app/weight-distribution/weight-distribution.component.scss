@@ -1,0 +1,13 @@
+:host {
+	display: contents;
+}
+
+canvas {
+	width: 100%;
+	max-width: calc(800px + 0.5em);
+	align-self: center;
+	background-color: oklch(var(--surface-container));
+	border-radius: 1em;
+	padding-top: 0.5em;
+	padding-left: 0.5em;
+}

@@ -5,46 +5,56 @@
 
 // These are the theme colors written as RGB triplets.
 // Allows for changing the alpha like so:
-// oklch(var(--some-color), 0.1)
+// oklch(var(--some-color) / 0.1)
 
-// @function srgb-to-linear($channel) {
-	
-// }
-
-// @function calculate-perceived-lightness($red, $green, $blue) {
-	
-// }
-
-// Generates a value between 0 and 255 where $percentage between 0 and 50 gives a value linearly faded from 0 to $mid and $percentage between 50 and 100 gives a value faded from $mid to 255.
-// @function generate-tone-channel($mid, $percentage) {
-// 	@if $percentage <= 50 {
-// 		@return calc($mid*$percentage/50);
+// @mixin generate-tones($name, $chroma, $hue) {
+// 	@each $percentage in 0, 1, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 99, 100 {
+// 		--#{$name}-#{$percentage}: #{$percentage}% #{$chroma} #{$hue};
 // 	}
-// 	@return calc($mid + (255 - $mid)*($percentage - 50)/50);
 // }
 
-@mixin generate-tones($name, $chroma, $hue, $is-light) {
-	@each $percentage in 0, 1, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 99, 100 {
-		$lightness: $percentage;
-		@if $is-light {
-			$lightness: 100 - $percentage;
-		}
+@function get-tone($base-name, $percentage) {
+	@return '#{$percentage}% var(#{$base-name})';
+}
 
-		--#{$name}-#{$percentage}: #{$lightness}% #{$chroma} #{$hue};
-		//#{generate-tone-channel($red, $percentage)}, #{generate-tone-channel($green, $percentage)}, #{generate-tone-channel($blue, $percentage)};
+@mixin generate-color-palette($name, $is-light) {
+	@if $is-light {
+		--#{$name}: #{get-tone(--#{$name}-base, 40)};
+		--on-#{$name}: #{get-tone(--#{$name}-base, 100)};
+		--#{$name}-container: #{get-tone(--#{$name}-base, 90)};
+		--on-#{$name}-container: #{get-tone(--#{$name}-base, 10)};
+	}
+	@else {
+		--#{$name}: #{get-tone(--#{$name}-base, 80)};
+		--on-#{$name}: #{get-tone(--#{$name}-base, 20)};
+		--#{$name}-container: #{get-tone(--#{$name}-base, 30)};
+		--on-#{$name}-container: #{get-tone(--#{$name}-base, 90)};
 	}
 }
 
-@mixin generate-theme($is-light) {
-	@include generate-tones(neutral, 0.05, 305, $is-light);
-	@include generate-tones(primary, 0.2, 305, $is-light);
-	@include generate-tones(secondary, 0.1, 225, $is-light);
-	@include generate-tones(bad, 0.2, 20, $is-light);
-	@include generate-tones(good, 0.1, 143, $is-light);
-}
+:root {	
+	// chroma hue
+	--neutral-base: 5% 305;
+	--neutral-variant-base: 2% 305;
+	--primary-base: 100% 305;
+	--secondary-base: 20% 280;
+	--tertiary-base: 50% 116;//200;//225;
+	--bad-base: 100% 19;
+	--good-base: 60% 143;
 
-:root {
-	@include generate-theme(false);
+	@each $color in primary, secondary, tertiary, bad, good {
+		@include generate-color-palette($color, $is-light: false);
+	}
+	--surface: #{get-tone(--neutral-base, 15)};
+	--surface-container-lowest: #{get-tone(--neutral-base, 13)};
+	--surface-container-low: #{get-tone(--neutral-base, 18)};
+	--surface-container: #{get-tone(--neutral-base, 21)};
+	--surface-container-high: #{get-tone(--neutral-base, 24)};
+	--surface-container-highest: #{get-tone(--neutral-base, 27)};
+	--on-surface: #{get-tone(--neutral-base, 90)};
+	--on-surface-variant: #{get-tone(--neutral-variant-base, 80)};
+	--outline: #{get-tone(--neutral-variant-base, 60)};
+	--outline-variant: #{get-tone(--neutral-variant-base, 30)};
 	
 	// --highlight: 210, 230, 255;
 	--shadow-opacity: 0.5;
@@ -52,8 +62,20 @@
 
 @media (prefers-color-scheme: light) {
 	:root {
-		@include generate-theme(true);
-	
+		@each $color in primary, secondary, tertiary, bad, good {
+			@include generate-color-palette($color, $is-light: true);
+		}
+		--surface: #{get-tone(--neutral-base, 98)};
+		--surface-container-lowest: #{get-tone(--neutral-base, 100)};
+		--surface-container-low: #{get-tone(--neutral-base, 96)};
+		--surface-container: #{get-tone(--neutral-base, 94)};
+		--surface-container-high: #{get-tone(--neutral-base, 92)};
+		--surface-container-highest: #{get-tone(--neutral-base, 90)};
+		--on-surface: #{get-tone(--neutral-base, 10)};
+		--on-surface-variant: #{get-tone(--neutral-variant-base, 30)};
+		--outline: #{get-tone(--neutral-variant-base, 50)};
+		--outline-variant: #{get-tone(--neutral-variant-base, 80)};
+
 		// --highlight: 0, 0, 0;
 		--shadow-opacity: 0.3;
 	}
@@ -62,6 +84,10 @@
 @font-face {
 	font-family: jost;
 	src: url(assets/Jost-VariableFont_wght.ttf);
+}
+
+:root {
+	font-family: jost;
 }
 
 @font-face {
@@ -101,16 +127,17 @@
 }
 
 body {
-	margin: 2em;
+	// margin: 2em;
+	margin: 0;
+	padding: 0;
 	
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 
-	background-color: oklch(var(--primary-10));
+	background-color: oklch(var(--surface-container-lowest));
 	
-	color: oklch(var(--primary-95));
-	font-family: jost;
+	color: oklch(var(--on-surface));
 	font-size: 1.3em;
 	cursor: default;
 	user-select: none;
@@ -141,9 +168,14 @@ p {
 	margin: 0;
 }
 
+a {
+	text-decoration: none;
+	color: oklch(var(--tertiary));
+}
+
 button {
-	background-color: oklch(var(--primary-30));
-	color: oklch(var(--primary-90));
+	background-color: oklch(var(--primary));
+	color: oklch(var(--on-primary));
 	border-radius: 2em;
 	border: none;
 	cursor: pointer;
@@ -152,7 +184,7 @@ button {
 	font-family: jost;
 	font-weight: 500;
 	font-size: 1em;
-	box-shadow: 0px 1px 4px oklch(0, 0, 0, var(--shadow-opacity));
+	box-shadow: 0px 1px 4px rgb(0, 0, 0, var(--shadow-opacity));
 	transition: box-shadow 200ms global.$ease-in-out;
 
 	display: flex;
@@ -160,51 +192,69 @@ button {
 	align-items:center;
 	gap: 0.4em;
 }
-button:hover {
-	box-shadow: 0px 1.5px 6px oklch(0, 0, 0, var(--shadow-opacity));
+button:hover  {
+	box-shadow: 0px 1.5px 6px rgb(0, 0, 0, var(--shadow-opacity));
 }
 
 button:disabled {
-	background-color: oklch(var(--neutral-20));
-	color: oklch(var(--neutral-80));
-	opacity: 0.6;
+	box-shadow: 0px 1px 4px rgb(0, 0, 0, var(--shadow-opacity));
+	background-color: oklch(var(--surface-container-highest));
+	color: oklch(var(--on-surface-variant));
+	opacity: 0.7;
 	cursor: default;
 }
 
 .outline-button {
-	background-color: transparent;
-	color: oklch(var(--primary-60));
-	border: 1px solid oklch(var(--neutral-20));
+	background-color: oklch(var(--surface));
+	color: oklch(var(--primary));
+	border: 1px solid oklch(var(--outline-variant));
 	box-shadow: none;
 	// font-weight: 600;
 }
 .outline-button:hover, .bad-button:hover {
-	box-shadow: 0px 1px 2px oklch(0, 0, 0, 10%);
+	box-shadow: 0px 1px 2px rgb(0, 0, 0, 10%);
 }
 
 .secondary-button {
-	background-color: oklch(var(--secondary-30));
+	background-color: oklch(var(--secondary));
 	border: none;
-	color: oklch(var(--secondary-90));
+	color: oklch(var(--on-secondary));
+}
+.tertiary-button {
+	background-color: oklch(var(--tertiary-container));
+	border: none;
+	color: oklch(var(--on-tertiary-container));
 }
 
 .bad-button {
-	background-color: transparent;//oklch(var(--bad-10));
-	color: oklch(var(--bad-50));
-	border: 1px solid oklch(var(--neutral-20));
+	background-color: oklch(var(--surface-container-low));
+	color: oklch(var(--bad));
+	border: 1px solid oklch(var(--outline-variant));
 	box-shadow: none;
 }
 
 input {
-	background-color: transparent;
-	color: oklch(var(--primary-90));
+	box-sizing: content-box;
+	background-color: oklch(var(--surface-container-low));
+	color: oklch(var(--on-surface));
 	outline: none;
+	// border: 2px solid oklch(var(--));
 	border: none;
-	border-bottom: 2.5px solid oklch(var(--primary-50));
+	border-bottom: 2.5px solid oklch(var(--primary));
+	// border-radius: 0.2em;
+	border-radius: 0.2em 0.2em 0 0;
 	width: 3em;
+	// padding: 0.5em;
+	padding-left: 0.4em;
 
 	font-family: jost;
 	font-size: 1em;
+
+	transition: background-color 200ms global.$ease-in-out;
+}
+
+input:focus {
+	background-color: oklch(var(--surface-container));
 }
 
 input::-webkit-outer-spin-button,
@@ -219,7 +269,7 @@ input[type=number] {
 }
 
 .good {
-    color: oklch(var(--good-50));
+    color: oklch(var(--good));
 }
 
 .hover-overlay {
@@ -230,7 +280,7 @@ input[type=number] {
 	width: 100%;
 	height: 100%;
 	transition: background-color 50ms global.$ease-in-out;
-	opacity: 0.1;
+	opacity: 0.08;
 }
 
 .ripple-instance {
@@ -244,11 +294,16 @@ input[type=number] {
 
 .header-bar {
 	width: 100%;
+	// padding: 0.5em 1em;
+	padding: 0 1em;
 	display: flex;
 	flex-direction: row;
 	gap: 0.6em;
 	align-items: center;
-	margin-bottom: 1.5em;
+	// margin-top: 1em;
+	margin-bottom: 1em;
+	// background-color: oklch(var(--surface-container));
+	// border-radius: 2em;
 }
 .header-bar > h1 {
 	text-align: left;
@@ -261,8 +316,8 @@ input[type=number] {
 }
 
 .header-bar > .back-button {
-	background-color: transparent;
-    border: 1px solid oklch(var(--neutral-20));
+	background-color: oklch(var(--surface));
+    border: 1px solid oklch(var(--outline-variant));
     border-radius: 50%;
     padding: 0.2em;
     font-size: 1.7em;
@@ -270,5 +325,15 @@ input[type=number] {
     box-shadow: none;
 	// color: oklch(var(--primary));
 	// background-color: oklch(var(--neutral-10));
-	color: oklch(var(--neutral-90));
+	color: oklch(var(--primary));
+}
+
+.content {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	// gap: 0.6em;
+	background-color: oklch(var(--surface));
+	border-radius: 1em;
+	padding: 1em;
 }
