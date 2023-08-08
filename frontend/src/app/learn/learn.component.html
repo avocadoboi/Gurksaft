@@ -7,6 +7,13 @@
 <div class="content">
 	<div id="phrase-header">
 		<h2>Phrase</h2>
+		<button appRipple="primary" 
+			id="play-button" 
+			class="outline-button material-symbols" 
+			(click)="playAudio()"
+			[disabled]="!sentenceAudioManager.hasAudio()">
+			volume_up
+		</button>
 		<button appRipple="bad" class="bad-button"><span class="material-symbols">delete_forever</span>Delete phrase</button>
 		<button appRipple="bad" class="bad-button"><span class="material-symbols">delete_forever</span>Delete word</button>
 	</div>

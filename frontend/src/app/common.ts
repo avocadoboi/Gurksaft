@@ -3,6 +3,8 @@
 	some simple animation utilities for when we need animations to be SMOOTH.
 */
 
+import { invoke } from "@tauri-apps/api";
+
 export function reciprocalEaseOutTransferFunction(t: number, sharpness: number = 0.8) {
 	return t/(t - Math.pow(1 - sharpness, 2)*(t - 1))
 }

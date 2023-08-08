@@ -1,32 +1,9 @@
 :host {
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
 	min-width: 20em;
 	width: 100%;
 	max-width: 40em;
 	padding: 1em;
 }
-
-#task {
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	min-width: 20em;
-	width: 100%;
-}
-
-.bad-button > .material-symbols {
-	// font-size: 1em;
-}
-
-#options-button {
-	// color: #aaa;
-	// margin-right: 0.1em;
-}
-// #statistics-button {
-// 	font-size: 0.8em;
-// }
 
 #phrase-header {
 	display: flex;
@@ -35,13 +12,24 @@
 	gap: 0.5em;
 	width: 100%;
 	margin-bottom: 1.2em;
-}
-#phrase-header h2 {
-	flex-grow: 1;
-	margin: 0;
-}
-#phrase-header button {
-	font-size: 0.6em;
+
+	h2 {
+		margin: 0;
+	}
+	#play-button {
+		background-color: oklch(var(--surface-container-low));
+		// color: oklch(var(--primary));
+		// border:
+		border-radius: 50%;
+		// box-shadow: none;
+		margin-left: 0.3em;
+		margin-right: auto;
+		padding: 0.3em;
+		font-size: 1em;	
+	}
+	.bad-button {
+		font-size: 0.6em;
+	}
 }
 
 #original-text {

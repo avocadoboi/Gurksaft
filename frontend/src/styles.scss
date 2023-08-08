@@ -46,7 +46,7 @@
 		@include generate-color-palette($color, $is-light: false);
 	}
 	--surface: #{get-tone(--neutral-base, 15)};
-	--surface-container-lowest: #{get-tone(--neutral-base, 13)};
+	--surface-container-lowest: #{get-tone(--neutral-base, 12)};
 	--surface-container-low: #{get-tone(--neutral-base, 18)};
 	--surface-container: #{get-tone(--neutral-base, 21)};
 	--surface-container-high: #{get-tone(--neutral-base, 24)};
@@ -209,7 +209,9 @@ button:disabled {
 	color: oklch(var(--primary));
 	border: 1px solid oklch(var(--outline-variant));
 	box-shadow: none;
-	// font-weight: 600;
+}
+.outline-button:disabled, .outline-button:disabled:hover {
+	box-shadow: none;
 }
 .outline-button:hover, .bad-button:hover {
 	box-shadow: 0px 1px 2px rgb(0, 0, 0, 10%);
@@ -294,38 +296,29 @@ input[type=number] {
 
 .header-bar {
 	width: 100%;
-	// padding: 0.5em 1em;
 	padding: 0 1em;
 	display: flex;
-	flex-direction: row;
 	gap: 0.6em;
 	align-items: center;
-	// margin-top: 1em;
 	margin-bottom: 1em;
-	// background-color: oklch(var(--surface-container));
-	// border-radius: 2em;
-}
-.header-bar > h1 {
-	text-align: left;
-	margin: 0;
-	width: auto;
-	flex-grow: 1;
-}
-.header-bar > button {
-	font-size: 0.8em;
-}
 
-.header-bar > .back-button {
-	background-color: oklch(var(--surface));
-    border: 1px solid oklch(var(--outline-variant));
-    border-radius: 50%;
-    padding: 0.2em;
-    font-size: 1.7em;
-	// box-shadow: 0 0.5px 2px oklch(0, 0, 0, 0.2);
-    box-shadow: none;
-	// color: oklch(var(--primary));
-	// background-color: oklch(var(--neutral-10));
-	color: oklch(var(--primary));
+	h1 {
+		text-align: left;
+		margin: 0;
+	}
+	button {
+		font-size: 0.8em;
+		flex-shrink: 0;
+	}
+	.back-button {
+		background-color: oklch(var(--surface));
+		border: 1px solid oklch(var(--outline-variant));
+		border-radius: 50%;
+		padding: 0.2em;
+		font-size: 1.7em;
+		box-shadow: none;
+		color: oklch(var(--primary));
+	}
 }
 
 .content {

@@ -49,6 +49,62 @@ enum TaskResult {
 	Succeeded,
 }
 
+//----------------------------------------------------------------
+
+export class SentenceAudio {
+	private buffer?: AudioBuffer;
+	private wantsToPlay = false;
+
+	constructor(private context: AudioContext, audioId: number) {
+		invoke<number[]>('download_sentence_audio', { audioId })
+			.then(data => context.decodeAudioData(Uint8Array.from(data).buffer, buffer => {
+				this.buffer = buffer;
+				if (this.wantsToPlay) {
+					this.play();
+				}
+			}));
+	}
+
+	play(): void {
+		if (this.buffer) {
+			const source = this.context.createBufferSource();
+			source.buffer = this.buffer;
+			source.connect(this.context.destination);
+			source.start();
+		}
+		this.wantsToPlay = !this.wantsToPlay;
+	}
+}
+
+class SentenceAudioManager {
+	private context = new AudioContext();
+	private clips: SentenceAudio[] = [];
+	private index = 0;
+
+	newSentence(id: number): void {
+		this.clips = [];
+		this.index = 0;
+		invoke<number[]>('get_audio_ids', { sentenceId: id })
+			.then(ids => {
+				this.index = 0;
+				for (const id of ids) {
+					this.clips.push(new SentenceAudio(this.context, id));
+				}
+			});
+	}
+	play(): void {
+		if (this.clips) {
+			this.clips[this.index].play();
+			this.index = (this.index + 1) % this.clips.length;
+		}
+	}
+	hasAudio(): boolean {
+		return this.clips.length != 0;
+	}
+}
+
+//----------------------------------------------------------------
+
 @Component({
 	selector: 'app-learn',
 	standalone: true,
@@ -67,6 +123,8 @@ export class LearnComponent implements AfterViewInit {
 	@ViewChild('wordInput') 
 	private wordInput!: ElementRef<HTMLInputElement>;
 
+	sentenceAudioManager = new SentenceAudioManager();
+	
 	constructor(private changeDetector: ChangeDetectorRef) {
 		appWindow.setTitle('Gurskaft - learn');
 	}
@@ -108,16 +166,17 @@ export class LearnComponent implements AfterViewInit {
 
 			const wordWidth = TextMeasure.widthOf(task.word, wordInput);
 			wordInput.style.width = `${wordWidth}px`;
-
 			wordInput.value = '';
 			wordInput.readOnly = false;
 			wordInput.style.color = 'oklch(var(--on-surface))';
+			
 			this.hint = '';
-
 			this.buttonText = 'Check';
-
 			this.currentTask = task;
 			this.taskState = TaskState.InputWord;
+			
+			this.sentenceAudioManager.newSentence(task.sentence_id);
+			
 			this.changeDetector.detectChanges();
 		});
 	}
@@ -171,5 +230,9 @@ export class LearnComponent implements AfterViewInit {
 		if (event.key == 'Enter') {
 			this.continue();
 		}
+	}
+
+	playAudio(): void {
+		this.sentenceAudioManager.play();
 	}
 }

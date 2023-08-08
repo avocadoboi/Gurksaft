@@ -87,7 +87,9 @@
 				"providerShortName": null,
 				"signingIdentity": null
 			},
-			"resources": [],
+			"resources": [
+				"audio_ids"
+			],
 			"shortDescription": "",
 			"targets": "all",
 			"windows": {
