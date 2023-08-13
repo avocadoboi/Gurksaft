@@ -12,7 +12,7 @@ use serde::{Serialize, Deserialize};
 
 //----------------------------------------------------------------
 
-const SAVE_DIRECTORY: &str = "save_data/";
+pub const SAVE_DIRECTORY: &str = "save_data";
 const MAX_SENTENCE_LEN: usize = 100;
 
 //----------------------------------------------------------------
@@ -216,14 +216,14 @@ impl LearningData {
 	}
 
 	pub fn save_sentences_to_file(&self, language_index: usize) {
-		util::create_directory_if_nonexistent(SAVE_DIRECTORY);
+		fs::create_dir_all(SAVE_DIRECTORY).unwrap();
 		fs::write(
 			Self::sentences_file_name(language_index), 
 			bincode::serialize(&self.sentences).unwrap()
 		).unwrap();
 	}
 	pub fn save_words_to_file(&self, language_index: usize) {
-		util::create_directory_if_nonexistent(SAVE_DIRECTORY);
+		fs::create_dir_all(SAVE_DIRECTORY).unwrap();
 		fs::write(
 			Self::words_file_name(language_index), 
 			bincode::serialize(&self.words).unwrap()

@@ -17,6 +17,9 @@ tauri-build = { version = "1.4.0", features = [] }
 [dependencies]
 bincode = "1.3"
 csv = "1.2"
+once_cell = "1.18"
+ort = "1.15"
+piper = { git = "https://github.com/avocadoboi/piper-rs.git" }
 rand = "0.8.5"
 reqwest = { version = "0.11.12", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }

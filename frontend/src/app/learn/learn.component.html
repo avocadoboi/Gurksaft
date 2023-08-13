@@ -11,10 +11,13 @@
 			id="play-button" 
 			class="outline-button material-symbols" 
 			(click)="playAudio()"
-			[disabled]="!sentenceAudioManager.hasAudio()">
+			[disabled]="!(audioLoader.hasAudio() && isFeedback())">
 			volume_up
 		</button>
-		<button appRipple="bad" class="bad-button"><span class="material-symbols">delete_forever</span>Delete phrase</button>
+		<div id="audio-count" *ngIf="audioLoader.clips.length > 1 && isFeedback()">
+			{{audioLoader.index + 1}}/{{audioLoader.clips.length}}
+		</div>
+		<button appRipple="bad" class="bad-button" style="margin-left: auto"><span class="material-symbols">delete_forever</span>Delete phrase</button>
 		<button appRipple="bad" class="bad-button"><span class="material-symbols">delete_forever</span>Delete word</button>
 	</div>
 
@@ -22,8 +25,8 @@
 		<p>{{preInputText}}</p>
 		<div id="word-input-wrapper">
 			<div id="word-input-hint" [innerHTML]="hint"></div>
-			<input #wordInput id="word-input" value="" autofocus
-			(keyup)="handleInputKeyUp($event)"
+			<input #wordInput id="word-input" value="" autofocus autocomplete="off"
+				(keyup)="handleInputKeyUp($event)"
 				(input)="hint = ''">
 		</div>
 		<p>{{postInputText}}</p>

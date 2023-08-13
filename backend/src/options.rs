@@ -1,6 +1,6 @@
+use std::fs;
+use std::path::Path;
 use serde::{Deserialize, Serialize};
-
-use crate::util;
 
 //----------------------------------------------------------------
 
@@ -23,7 +23,9 @@ pub struct Options {
 
 impl Options {
     pub fn save(&self) {
-		util::create_parent_directory_if_nonexistent(OPTIONS_SAVE_FILE);
+        if let Some(directory) = Path::new(OPTIONS_SAVE_FILE).parent() {
+            fs::create_dir_all(directory).unwrap();
+        }
 		let file = std::fs::File::create(OPTIONS_SAVE_FILE).unwrap();
 		bincode::serialize_into(file, &self).unwrap();
     }

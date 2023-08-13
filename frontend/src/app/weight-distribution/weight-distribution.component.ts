@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { invoke } from '@tauri-apps/api';
@@ -42,7 +42,11 @@ export class WeightDistributionComponent implements AfterViewInit {
 	private width: number = 0;
 	private height: number = 0;
 
-	ngAfterViewInit(): void {
+	// constructor(private changeDetector: ChangeDetectorRef) {
+	// 	changeDetector.detectChanges();
+	// }
+	
+	ngAfterViewInit(): void {		
 		const canvasElement = this.canvas.nativeElement;
 		this.width = canvasElement.width;
 		this.height = canvasElement.height;
@@ -101,7 +105,6 @@ export class WeightDistributionComponent implements AfterViewInit {
 		this.context.restore();
 	}
 
-	@HostListener('wheel', ['$event'])
 	scroll(event: WheelEvent): void {
 		this.scrollOffset = Math.min(this.words.length*(barWidth + barSpacing), Math.max(0, this.scrollOffset + event.deltaY));
 		this.draw();

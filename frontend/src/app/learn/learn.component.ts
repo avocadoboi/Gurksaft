@@ -3,9 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 import { invoke } from '@tauri-apps/api';
+import { emit, listen } from '@tauri-apps/api/event';
 import { appWindow } from '@tauri-apps/api/window';
 
+import { AudioLoaderService } from '../audio-loader.service';
 import { RippleDirective } from '../ripple.directive';
+import { Subscription } from 'rxjs';
 
 //----------------------------------------------------------------
 
@@ -39,7 +42,7 @@ type FinishedTask = {
 
 //----------------------------------------------------------------
 
-enum TaskState {
+export enum TaskState {
 	InputWord,
 	Feedback,
 };
@@ -47,60 +50,6 @@ enum TaskState {
 enum TaskResult {
 	Failed,
 	Succeeded,
-}
-
-//----------------------------------------------------------------
-
-export class SentenceAudio {
-	private buffer?: AudioBuffer;
-	private wantsToPlay = false;
-
-	constructor(private context: AudioContext, audioId: number) {
-		invoke<number[]>('download_sentence_audio', { audioId })
-			.then(data => context.decodeAudioData(Uint8Array.from(data).buffer, buffer => {
-				this.buffer = buffer;
-				if (this.wantsToPlay) {
-					this.play();
-				}
-			}));
-	}
-
-	play(): void {
-		if (this.buffer) {
-			const source = this.context.createBufferSource();
-			source.buffer = this.buffer;
-			source.connect(this.context.destination);
-			source.start();
-		}
-		this.wantsToPlay = !this.wantsToPlay;
-	}
-}
-
-class SentenceAudioManager {
-	private context = new AudioContext();
-	private clips: SentenceAudio[] = [];
-	private index = 0;
-
-	newSentence(id: number): void {
-		this.clips = [];
-		this.index = 0;
-		invoke<number[]>('get_audio_ids', { sentenceId: id })
-			.then(ids => {
-				this.index = 0;
-				for (const id of ids) {
-					this.clips.push(new SentenceAudio(this.context, id));
-				}
-			});
-	}
-	play(): void {
-		if (this.clips) {
-			this.clips[this.index].play();
-			this.index = (this.index + 1) % this.clips.length;
-		}
-	}
-	hasAudio(): boolean {
-		return this.clips.length != 0;
-	}
 }
 
 //----------------------------------------------------------------
@@ -120,17 +69,26 @@ export class LearnComponent implements AfterViewInit {
 	buttonText = '';
 	hint = '';
 
+	private newAudioDataSubscription = this.audioLoader.newAudioData$.subscribe(() => this.changeDetector.detectChanges());
+
 	@ViewChild('wordInput') 
 	private wordInput!: ElementRef<HTMLInputElement>;
 
-	sentenceAudioManager = new SentenceAudioManager();
-	
-	constructor(private changeDetector: ChangeDetectorRef) {
+	constructor(public audioLoader: AudioLoaderService, private changeDetector: ChangeDetectorRef) {
 		appWindow.setTitle('Gurskaft - learn');
 	}
 
 	ngAfterViewInit(): void {
 		this.nextTask();
+	}
+
+	ngOnDestroy(): void {
+		this.newAudioDataSubscription.unsubscribe();
+		this.audioLoader.stopLoading();
+	}
+
+	isFeedback(): boolean {
+		return this.taskState == TaskState.Feedback;
 	}
 
 	continue(): void {
@@ -148,6 +106,7 @@ export class LearnComponent implements AfterViewInit {
 					this.finishTask(TaskResult.Failed);
 					this.retry();
 				}
+				this.playAudio();
 				break;
 			case TaskState.Feedback:
 				this.nextTask();
@@ -175,7 +134,7 @@ export class LearnComponent implements AfterViewInit {
 			this.currentTask = task;
 			this.taskState = TaskState.InputWord;
 			
-			this.sentenceAudioManager.newSentence(task.sentence_id);
+			this.audioLoader.newSentence(task.sentence, task.sentence_id);
 			
 			this.changeDetector.detectChanges();
 		});
@@ -233,6 +192,6 @@ export class LearnComponent implements AfterViewInit {
 	}
 
 	playAudio(): void {
-		this.sentenceAudioManager.play();
+		this.audioLoader.play();
 	}
 }

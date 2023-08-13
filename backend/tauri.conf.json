@@ -10,7 +10,7 @@
 			"cwd": "../frontend"
 		},
 		"devPath": "http://localhost:4200/",
-		"distDir": "../frontend/dist"
+		"distDir": "../frontend/dist/frontend"
 	},
 	"package": {
 		"productName": "Gurksaft",
@@ -64,7 +64,7 @@
 			}
 		},
 		"bundle": {
-			"active": true,
+			"active": false,
 			"category": "DeveloperTool",
 			"copyright": "",
 			"deb": {

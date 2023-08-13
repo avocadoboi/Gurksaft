@@ -33,14 +33,16 @@
 }
 
 :root {	
+	color-scheme: dark;
+	
 	// chroma hue
-	--neutral-base: 5% 305;
-	--neutral-variant-base: 2% 305;
-	--primary-base: 100% 305;
-	--secondary-base: 20% 280;
-	--tertiary-base: 50% 116;//200;//225;
-	--bad-base: 100% 19;
-	--good-base: 60% 143;
+	--neutral-base: 0.02 305;
+	--neutral-variant-base: 0.001 305;
+	--primary-base: 0.2 305;
+	--secondary-base: 0.074 280;
+	--tertiary-base: 0.19 116;//200;//225;
+	--bad-base: 0.26 19;
+	--good-base: 0.22 143;
 
 	@each $color in primary, secondary, tertiary, bad, good {
 		@include generate-color-palette($color, $is-light: false);
@@ -62,6 +64,8 @@
 
 @media (prefers-color-scheme: light) {
 	:root {
+		color-scheme: light;
+
 		@each $color in primary, secondary, tertiary, bad, good {
 			@include generate-color-palette($color, $is-light: true);
 		}

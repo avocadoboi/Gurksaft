@@ -41,7 +41,8 @@
 	position: absolute;
 	z-index: 1;
 	top: 2.25em;
-	overflow: scroll;
+	overflow-x: hidden;
+	overflow-y: scroll;
 	max-height: 0;
 	background-color: oklch(var(--surface-container));
 	border-radius: 0.5em;
