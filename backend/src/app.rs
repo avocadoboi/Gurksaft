@@ -71,15 +71,8 @@ fn finish_task(state: tauri::State<AppState>, task: learning_data::FinishedTask)
 
 #[tauri::command]
 async fn load_sentence_audio(app: tauri::AppHandle, window: tauri::Window, sentence_id: SentenceId, sentence: String) {
-	// let _listen_guard = WindowListenGuard::new(&window, "cancel_sentence_audio", |_| {
-	// 	println!("Setting should_cancel to true");
-	// 	SHOULD_CANCEL_AUDIO_LOADING.store(true, Ordering::SeqCst);
-	// });
-
-	let state = app.state::<AppState>();
-	let audio_loader = state.audio_loader.lock().await;
-	audio_loader.load_audio_for_sentence(&window, sentence_id, sentence).await;
-	// tokio::task::block_in_place(audio_loader.load_audio_for_sentence(&window, sentence_id, sentence));
+	app.state::<AppState>().audio_loader.lock().await
+		.load_audio_for_sentence(&window, sentence_id, sentence).await;
 }
 
 //----------------------------------------------------------------
@@ -177,17 +170,17 @@ async fn add_new_language_data(app: tauri::AppHandle, source_data: SourceData) {
 //----------------------------------------------------------------
 
 #[derive(Serialize, Deserialize)]
-struct Weights {
+struct WordData {
 	words: Vec<LearningWord>,
 	max_weight: f64
 }
 
 #[tauri::command]
-fn get_weights(state: tauri::State<AppState>) -> Weights {
+fn get_word_data(state: tauri::State<AppState>) -> WordData {
 	let learning_data = state.learning_data.blocking_lock();
 	let words = &learning_data.words().0;
 
-	Weights {
+	WordData {
 		words: words.clone(),
 		max_weight: words.iter()
 			.max_by(|&a, &b| a.weight.total_cmp(&b.weight))
@@ -206,7 +199,7 @@ pub fn run() {
 			get_current_language,
 			get_language_list,
 			get_saved_language_list,
-			get_weights,
+			get_word_data,
 			get_weight_factors,
 			load_sentence_audio,
 			next_task, 

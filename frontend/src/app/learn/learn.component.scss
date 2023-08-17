@@ -44,11 +44,11 @@
 	display: inline;
 	line-height: 1.4em;
 }
-#word-input-wrapper {
+.word-input-wrapper {
 	display: inline-block;
 	position: relative;
 }
-#word-input-hint {
+.word-input-hint {
 	position: absolute;
 	left: 0;
 	bottom: 0;
@@ -58,7 +58,7 @@
 	// opacity: 0.;
 	pointer-events: none;
 }
-#word-input {
+.word-input {
 	margin: 0;
 	// padding: 0;
 	padding: 0 0.25em;

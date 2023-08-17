@@ -38,7 +38,7 @@ impl Options {
             language_index,
             saved_languages: vec![language_index],
             weight_factors: WeightFactors {
-                succeeded: 0.8,
+                succeeded: 0.7,
                 failed: 2.,
             }
         }

@@ -1,14 +1,13 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, QueryList, ViewChildren } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 import { invoke } from '@tauri-apps/api';
-import { emit, listen } from '@tauri-apps/api/event';
 import { appWindow } from '@tauri-apps/api/window';
 
 import { AudioLoaderService } from '../audio-loader.service';
 import { RippleDirective } from '../ripple.directive';
-import { Subscription } from 'rxjs';
+import { FormsModule } from '@angular/forms';
 
 //----------------------------------------------------------------
 
@@ -25,54 +24,82 @@ class TextMeasure {
 //----------------------------------------------------------------
 // Backend types
 
+type TaskWord = {
+	id: number,
+	word: string,
+	position: number,	
+};
+
 type LearningTask = {
-	word_id: number;
-	sentence_id: number;
-	word: string;
-	word_pos: number;
-	sentence: string;
-	translations: string[];
+	sentence_id: number,
+	sentence: string,
+	translations: string[],
+	review_words: TaskWord[],
+};
+
+enum WordReviewResult {
+	Succeeded = "Succeeded",
+	Failed = "Failed",
+}
+
+type FinishedWordReview = {
+	word_id: number,
+	result: WordReviewResult,
 };
 
 type FinishedTask = {
-	word_id: number;
-	sentence_id: number;
-	result: string;
+	word_reviews: FinishedWordReview[]
 };
 
 //----------------------------------------------------------------
 
-export enum TaskState {
-	InputWord,
-	Feedback,
-};
+class WordInput {
+	inputText = '';
+	word: string;
+	width: number = 0;
+	hint = '';
+	finished = false;
+	textAfter: string = '';
+	
+	index: number;
+	wordId: number;
 
-enum TaskResult {
-	Failed,
-	Succeeded,
+	constructor(word: TaskWord, textAfter: string, index: number) {
+		this.word = word.word;
+		this.width = TextMeasure.widthOf(word.word, document.getElementById('original-text')!);
+		this.textAfter = textAfter;
+		this.wordId = word.id;
+		this.index = index;
+	}
 }
 
-//----------------------------------------------------------------
+enum TaskState {
+	Input,
+	Feedback,
+}
 
 @Component({
 	selector: 'app-learn',
 	standalone: true,
-	imports: [CommonModule, RippleDirective, RouterModule],
+	imports: [CommonModule, FormsModule, RouterModule, 
+		RippleDirective],
 	templateUrl: './learn.component.html',
 	styleUrls: ['./learn.component.scss']
 })
 export class LearnComponent implements AfterViewInit {
-	private taskState = TaskState.InputWord;
-	currentTask?: LearningTask;
+	private taskState = TaskState.Input;
+	
 	preInputText = '';
-	postInputText = '';
+	wordInputs: WordInput[] = [];
+	
 	buttonText = '';
-	hint = '';
+
+	translations: string[] = [];
+
+	@ViewChildren('wordInput')
+	inputElements!: QueryList<ElementRef<HTMLInputElement>>;
 
 	private newAudioDataSubscription = this.audioLoader.newAudioData$.subscribe(() => this.changeDetector.detectChanges());
-
-	@ViewChild('wordInput') 
-	private wordInput!: ElementRef<HTMLInputElement>;
 
 	constructor(public audioLoader: AudioLoaderService, private changeDetector: ChangeDetectorRef) {
 		appWindow.setTitle('Gurskaft - learn');
@@ -80,6 +107,9 @@ export class LearnComponent implements AfterViewInit {
 
 	ngAfterViewInit(): void {
 		this.nextTask();
+		this.inputElements.changes.subscribe(() => {
+			this.inputElements.first.nativeElement.focus();
+		})
 	}
 
 	ngOnDestroy(): void {
@@ -92,20 +122,13 @@ export class LearnComponent implements AfterViewInit {
 	}
 
 	continue(): void {
-		if (!this.currentTask) {
+		if (!this.wordInputs.length) {
 			return;
 		}
 
 		switch (this.taskState) {
-			case TaskState.InputWord:
-				if (this.wordInput.nativeElement.value.toLowerCase() == this.currentTask.word.toLowerCase()) {
-					this.finishTask(TaskResult.Succeeded);
-					this.showSuccessFeedback();
-				}
-				else {
-					this.finishTask(TaskResult.Failed);
-					this.retry();
-				}
+			case TaskState.Input:
+				this.finishTask();
 				this.playAudio();
 				break;
 			case TaskState.Feedback:
@@ -113,26 +136,29 @@ export class LearnComponent implements AfterViewInit {
 				break;
 		}
 
-		this.wordInput.nativeElement.focus();
+		// this.wordInput.nativeElement.focus();
 	}
 	
 	private nextTask(): void {
 		invoke<LearningTask>('next_task').then(task => {
-			this.preInputText = task.sentence.substring(0, task.word_pos);
-			this.postInputText = task.sentence.substring(task.word_pos + task.word.length);
-
-			const wordInput = this.wordInput.nativeElement;
-
-			const wordWidth = TextMeasure.widthOf(task.word, wordInput);
-			wordInput.style.width = `${wordWidth}px`;
-			wordInput.value = '';
-			wordInput.readOnly = false;
-			wordInput.style.color = 'oklch(var(--on-surface))';
+			this.wordInputs = [];
 			
-			this.hint = '';
+			this.preInputText = task.sentence.substring(0, task.review_words[0].position);
+			
+			// The words are ordered by sentence position.
+			for (let i = 0; i < task.review_words.length; i++) {
+				this.wordInputs.push(new WordInput(
+					task.review_words[i], 
+					task.sentence.substring(
+						task.review_words[i].position + task.review_words[i].word.length, 
+						task.review_words.at(i + 1)?.position
+					),
+					i
+				));
+			}
 			this.buttonText = 'Check';
-			this.currentTask = task;
-			this.taskState = TaskState.InputWord;
+			this.taskState = TaskState.Input;
+			this.translations = task.translations;
 			
 			this.audioLoader.newSentence(task.sentence, task.sentence_id);
 			
@@ -140,37 +166,46 @@ export class LearnComponent implements AfterViewInit {
 		});
 	}
 
-	private finishTask(result: TaskResult): void {
-		if (!this.currentTask) {
-			return;
+	private finishTask(): void {
+		const task: FinishedTask = { word_reviews: [] };
+		let areAllFinished = true;
+
+		for (const input of this.wordInputs.filter(value => !value.finished)) {
+			const succeeded = input.word == input.inputText;
+			task.word_reviews.push({
+				result: succeeded ? WordReviewResult.Succeeded : WordReviewResult.Failed,
+				word_id: input.wordId
+			});
+
+			if (succeeded) {
+				input.finished = true;
+			}
+			else {
+				this.retryWord(input);
+				areAllFinished = false;
+			}
 		}
 
-		const task: FinishedTask = {
-			word_id: this.currentTask.word_id,
-			sentence_id: this.currentTask.sentence_id,
-			result: result == TaskResult.Failed ? "Failed" : "Succeeded"
-		};
-
-		invoke('finish_task', { task });
-	}
-
-	private showSuccessFeedback(): void {
-		const input = this.wordInput.nativeElement;
-		input.style.color = 'oklch(var(--good))';
-		input.readOnly = true;
-		this.buttonText = 'Next';
-		this.taskState = TaskState.Feedback;
-		this.changeDetector.detectChanges();
-	}
-
-	private retry(): void {
-		if (!this.currentTask) {
-			return;
+		if (task.word_reviews.length) {
+			invoke('finish_task', { task });
 		}
 
-		let hint = this.currentTask.word;
+		if (areAllFinished) {
+			this.buttonText = 'Next';
+			this.taskState = TaskState.Feedback;
+		}
+		else {
+			const element = this.findFirstEditableWordInput(0);
+			if (element) {
+				element.focus();
+			}
+		}
+	}
+
+	private retryWord(wordInput: WordInput) {
+		let hint = wordInput.word;
 		let pos = 0;
-		for (const letter of this.wordInput.nativeElement.value.substring(0, hint.length)) {
+		for (const letter of wordInput.inputText.substring(0, hint.length)) {
 			const pos_in_hint = hint.indexOf(letter, pos);
 			if (pos_in_hint >= 0) {
 				hint = `${hint.substring(0, pos_in_hint)}<span class="good">${letter}</span>${hint.substring(pos_in_hint + 1)}`;
@@ -180,14 +215,59 @@ export class LearnComponent implements AfterViewInit {
 				pos++;
 			}
 		}
-		this.hint = hint;
-		this.wordInput.nativeElement.value = "";
-		this.changeDetector.detectChanges();
+		wordInput.hint = hint;
+		wordInput.inputText = '';
 	}
 
 	handleInputKeyUp(event: KeyboardEvent): void {
+		const element = event.target as HTMLInputElement;
+		let index = Number(element.dataset['index']);
 		if (event.key == 'Enter') {
 			this.continue();
+		}
+		else if (event.key == 'Backspace' && !element.value.length && index > 0) {
+			const element = this.findLastEditableWordInput(index - 1);
+			if (element) {
+				element.focus();
+			}
+		}
+		else if (event.key != 'ArrowRight' && element.value.length == element.maxLength && index < this.inputElements.length - 1) {
+			const element = this.findFirstEditableWordInput(index + 1);
+			if (element) {
+				element.focus();
+			}
+		}
+	}
+
+	private findLastEditableWordInput(index: number): HTMLInputElement | undefined {
+		while (true) {
+			const element = this.inputElements.get(index)?.nativeElement!;
+			if (element.readOnly) {
+				if (index > 0) {
+					index--;
+					continue;
+				}
+				else {
+					return undefined;
+				}
+			}
+			return element;
+		}
+
+	}
+	private findFirstEditableWordInput(index: number): HTMLInputElement | undefined {
+		while (true) {
+			const element = this.inputElements.get(index)?.nativeElement!;
+			if (element.readOnly) {
+				if (index < this.inputElements.length - 1) {
+					index++;
+					continue;
+				}
+				else {
+					return undefined;
+				}
+			}
+			return element;
 		}
 	}
 

@@ -20,7 +20,8 @@ type WeightFactors = {
 @Component({
 	selector: 'app-options',
 	standalone: true,
-	imports: [CommonModule, DropdownComponent, DropdownOptionComponent, FormsModule, RippleDirective, RouterModule],
+	imports: [CommonModule, FormsModule, RouterModule, 
+		DropdownComponent, DropdownOptionComponent, RippleDirective],
 	templateUrl: './options.component.html',
 	styleUrls: ['./options.component.scss']
 })

@@ -706,6 +706,11 @@ impl<F: Fn(SourceDataDownloadStatus)> SourceDataDownloader<F> {
 		let mut file_data = vec_with_optional_capacity(length);
 
 		while let Ok(Some(chunk)) = response.chunk().await {
+			/*
+				I am not sure if we should write the chunks directly to the file or read them in a buffer first.
+				For now we do the latter to avoid partially written files if the program was shut down in the middle of downloading 
+				or something.
+			 */
 			// file.write_all(&chunk).unwrap();
 			file_data.extend_from_slice(&chunk);
 

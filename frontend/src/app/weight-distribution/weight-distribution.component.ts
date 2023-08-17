@@ -1,21 +1,8 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { invoke } from '@tauri-apps/api';
-
 import { getPaletteColor } from '../common';
-
-//----------------------------------------------------------------
-
-type LearningWord = {
-	word: string;
-	weight: number;
-};
-
-type Weights = {
-	words: LearningWord[];
-	max_weight: number;
-};
+import { LearningWord, WordData } from '../statistics/statistics.component';
 
 //----------------------------------------------------------------
 
@@ -36,12 +23,17 @@ export class WeightDistributionComponent implements AfterViewInit {
 	private canvas!: ElementRef<HTMLCanvasElement>;
 	private context!: CanvasRenderingContext2D;
 
-	private words: LearningWord[] = [];
-	private maxWeight: number = 1;
+	private wordData!: WordData;
+	private isLongTermMemory: boolean = false;
 	private scrollOffset: number = 0;
 	private width: number = 0;
 	private height: number = 0;
 
+	setWordData(data: WordData, isLongTermMemory: boolean) {
+		this.wordData = data;
+		this.isLongTermMemory = isLongTermMemory;
+		this.draw();
+	}
 	// constructor(private changeDetector: ChangeDetectorRef) {
 	// 	changeDetector.detectChanges();
 	// }
@@ -56,12 +48,6 @@ export class WeightDistributionComponent implements AfterViewInit {
 		this.context.textAlign = 'start';
 		this.context.textBaseline = 'middle';
 
-		invoke<Weights>('get_weights').then(weights => {
-			this.words = weights.words;
-			this.maxWeight = weights.max_weight;
-			this.draw();
-		});
-
 		window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => this.draw());
 	}
 
@@ -69,7 +55,7 @@ export class WeightDistributionComponent implements AfterViewInit {
 		this.context.clearRect(0, 0, this.width, this.height);
 
 		const firstWordIndex = Math.max(0, Math.floor(this.scrollOffset / (barWidth + barSpacing)));
-		const lastWordIndex = Math.min(this.words.length - 1, Math.floor((this.scrollOffset + this.width) / (barWidth + barSpacing)));
+		const lastWordIndex = Math.min(this.wordData.words.length - 1, Math.floor((this.scrollOffset + this.width) / (barWidth + barSpacing)));
 		
 		this.drawBars(firstWordIndex, lastWordIndex);
 		this.drawWords(firstWordIndex, lastWordIndex);
@@ -79,7 +65,8 @@ export class WeightDistributionComponent implements AfterViewInit {
 		this.context.fillStyle = getPaletteColor('primary');
 		this.context.beginPath();
 		for (let i = firstWordIndex; i <= lastWordIndex; i++) {
-			const barHeight = this.words[i].weight/this.maxWeight*(this.height - wordSpace);
+			const barHeight = (this.isLongTermMemory ? this.wordData.words[i].long_term_memory 
+				: this.wordData.words[i].weight / this.wordData.max_weight) * (this.height - wordSpace);
 			this.context.roundRect(
 				i*(barWidth + barSpacing) - this.scrollOffset, 
 				this.height - wordSpace - barHeight, 
@@ -100,13 +87,13 @@ export class WeightDistributionComponent implements AfterViewInit {
 		this.context.rotate(textAngle);
 		for (let i = firstWordIndex; i <= lastWordIndex; i++) {
 			const offset = i*(barWidth + barSpacing);
-			this.context.fillText(this.words[i].word, offset*textOffsetDirection.x, offset*textOffsetDirection.y);
+			this.context.fillText(this.wordData.words[i].word, offset*textOffsetDirection.x, offset*textOffsetDirection.y);
 		}
 		this.context.restore();
 	}
 
 	scroll(event: WheelEvent): void {
-		this.scrollOffset = Math.min(this.words.length*(barWidth + barSpacing), Math.max(0, this.scrollOffset + event.deltaY));
+		this.scrollOffset = Math.min(this.wordData.words.length*(barWidth + barSpacing), Math.max(0, this.scrollOffset + event.deltaY));
 		this.draw();
 	}
 }
