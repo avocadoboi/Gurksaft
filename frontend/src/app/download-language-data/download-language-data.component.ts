@@ -14,6 +14,7 @@ import { appWindow } from '@tauri-apps/api/window';
 })
 export class DownloadLanguageDataComponent {
 	statusMessage: string = 'Loading...';
+	progress: number = 0;
 	unlisten?: UnlistenFn;
 	
 	constructor(private router: Router, private changeDetector: ChangeDetectorRef, private zone: NgZone) { 
@@ -25,21 +26,26 @@ export class DownloadLanguageDataComponent {
 		listen<any>("download_status", event => {
 			if (event.payload.DownloadingWords) {
 				const status = event.payload.DownloadingWords;
+				this.progress = status.progress;
 				this.statusMessage = `Downloading word list... ${progress_to_string(status.progress)}`;
 			}
 			else if (event.payload.PreparingSentenceFile) {
 				const status = event.payload.PreparingSentenceFile;
+				this.progress = 0;
 				this.statusMessage = `Preparing ${status.translation_language} translations...\nThis might take a while.`;
 			}
 			else if (event.payload.DownloadingSentenceFile) {
 				const status = event.payload.DownloadingSentenceFile;
+				this.progress = status.progress;
 				this.statusMessage = `Downloading ${status.translation_language} translations... ${progress_to_string(status.progress)}`;
 			}
 			else if (event.payload.DownloadingVoiceModel) {
 				const status = event.payload.DownloadingVoiceModel;
+				this.progress = status.progress;
 				this.statusMessage = `Downloading voice model ${status.index + 1}/${status.total}... ${progress_to_string(status.progress)}`;
 			}
 			else if (event.payload == 'Loading') {
+				this.progress = 0;
 				this.statusMessage = "Parsing data...";
 			}
 			else if (event.payload == 'Finished') {

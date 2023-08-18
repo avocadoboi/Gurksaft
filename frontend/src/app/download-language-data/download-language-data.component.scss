@@ -1,3 +1,5 @@
+@use '../../global';
+
 :host {
 	height: 100vh;
 	display: flex;
@@ -12,4 +14,14 @@
 	line-height: 1.5em;
 	margin: 0;
 	white-space: pre;
+}
+#progress-bar {
+	position: absolute;
+	z-index: -1;
+	left: 0;
+	top: 0;
+	height: 100vh;
+	width: 0vw;
+	background-color: oklch(var(--primary) / 80%);
+	transition: width 50ms global.$ease-in-out;
 }

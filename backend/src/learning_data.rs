@@ -72,7 +72,7 @@ impl LearningWord {
 		self.last_review = now;
 
 		const DECAY_RATE_RANGE: (f32, f32) = (0.1, 0.5);
-		const HALF_TIME: f32 = 7.;
+		const HALF_TIME: f32 = 4.;
 
 		let decay_rate = DECAY_RATE_RANGE.1 - (DECAY_RATE_RANGE.1 - DECAY_RATE_RANGE.0) * f32::exp2(-days_since_last_review / HALF_TIME);
 		self.long_term_memory += ((result == WordReviewResult::Succeeded) as i32 as f32 - self.long_term_memory) * decay_rate;
@@ -263,7 +263,7 @@ impl LearningData {
 				review_words.extend(matching_words);
 			};
 			
-			const EASY_THRESHOLD: f32 = 0.8;
+			const EASY_THRESHOLD: f32 = 0.75;
 			
 			// If the sentence contains any words that are easy enough, review them.
 			for (i, learned_word) in self.words.0.iter().enumerate().filter(|(_i, word)| word.long_term_memory > EASY_THRESHOLD) {
