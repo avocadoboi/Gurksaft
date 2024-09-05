@@ -225,7 +225,7 @@ export class LearnComponent implements AfterViewInit {
 		if (event.key == 'Enter') {
 			this.continue();
 		}
-		else if (event.key == 'Backspace' && !element.value.length && index > 0) {
+		else if (event.key == 'Backspace' && !this.wordInputs[index].inputText.length && index > 0) {
 			const element = this.findLastEditableWordInput(index - 1);
 			if (element) {
 				element.focus();

@@ -10,7 +10,7 @@ fn pack_sentences_with_audio() -> Result<(), Box<dyn Error>> {
 
     let rows = reader.deserialize();
 
-    let mut result: HashMap<u32, Vec<u32>> = HashMap::new();
+    let mut result = HashMap::<u32, Vec<u32>>::new();
     
     for row in rows {
         let row: (u32, u32, String, String, String) = row?;

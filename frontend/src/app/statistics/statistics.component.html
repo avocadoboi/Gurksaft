@@ -4,11 +4,13 @@
 </div>
 
 <div class="content">
-	<h2>Weight distribution</h2>
-	<p>Each word in the target language has a weight which determines how likely it is to be tested on you. Initially these weights are based on word frequency data taken from <a href="https://github.com/hermitdave/FrequencyWords" target="_blank">a dataset</a>, but the weights are adjusted over time as you learn.</p>
-	<app-weight-distribution #weightDistributionGraph></app-weight-distribution>
-
-	<h2>Long term memory</h2>
-	<!-- <p>blabla</p> -->
-	<app-weight-distribution #longTermMemoryGraph></app-weight-distribution>
+	<div>
+		<h2>Weight distribution</h2>
+		<p>Each word in the target language has a weight which determines how likely it is to be tested on you. Initially these weights are based on word frequency data taken from <a href="https://github.com/hermitdave/FrequencyWords" target="_blank">a dataset</a>, but the weights are adjusted over time as you learn.</p>
+		<app-weight-distribution #weightDistributionGraph></app-weight-distribution>
+	</div>
+	<div>
+		<h2>Long term memory</h2>
+		<app-weight-distribution #longTermMemoryGraph></app-weight-distribution>
+	</div>
 </div>

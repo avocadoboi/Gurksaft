@@ -1,5 +1,3 @@
-// use std::sync::{, MutexGuard};
-
 use serde::{Deserialize, Serialize};
 
 use tauri::Manager;
@@ -7,17 +5,21 @@ use tauri::Manager;
 use tokio::sync::Mutex;
 
 use crate::{
-	learning_data, 
 	learning_data::{
+		FinishedTask,
 		LearningData, 
+		LearningTask,
 		LearningWord, 
 		SentenceId
 	},
-	options, 
-	options::Options,
+	options::{Options, WeightFactors, WordMemoryParameters},
 	sentence_audio::AudioLoader,
-	source_data, 
-	source_data::SourceData
+	source_data::{
+		SourceData,
+		SourceDataDownloadStatus,
+		SourceDataInfo,
+		LANGUAGES,
+	}
 };
 
 //----------------------------------------------------------------
@@ -30,11 +32,13 @@ struct AppState {
 
 impl AppState {
 	fn new(app: tauri::AppHandle, source_data: &SourceData) -> Self {
-		let learning_data = LearningData::load_from_source_data(&source_data);
+		let options = Options::new(source_data.language_index);
+
+		let learning_data = LearningData::load_from_source_data(&source_data, &options);
 		learning_data.save_sentences_to_file(source_data.language_index);
 
 		Self {
-			options: Mutex::new(options::Options::new(source_data.language_index)),
+			options: Mutex::new(options),
 			learning_data: Mutex::new(learning_data),
 			audio_loader: Mutex::new(AudioLoader::new(app, source_data.language_index)),
 		}
@@ -58,13 +62,13 @@ impl AppState {
 //----------------------------------------------------------------
 
 #[tauri::command]
-fn next_task(state: tauri::State<AppState>) -> learning_data::LearningTask {
+fn next_task(state: tauri::State<AppState>) -> LearningTask {
 	state.learning_data.blocking_lock().next_task()
 }
 
 #[tauri::command]
-fn finish_task(state: tauri::State<AppState>, task: learning_data::FinishedTask) {
-	state.learning_data.blocking_lock().finish_task(task, state.options.blocking_lock().weight_factors)
+fn finish_task(state: tauri::State<AppState>, task: FinishedTask) {
+	state.learning_data.blocking_lock().finish_task(task, &state.options.blocking_lock())
 }
 
 //----------------------------------------------------------------
@@ -77,35 +81,41 @@ async fn load_sentence_audio(app: tauri::AppHandle, window: tauri::Window, sente
 
 //----------------------------------------------------------------
 
-#[tauri::command]
-fn get_weight_factors(state: tauri::State<AppState>) -> options::WeightFactors {
-	state.options.blocking_lock().weight_factors
+#[derive(Serialize, Deserialize)]
+struct FrontendOptions {
+	current_language: &'static str,
+	saved_languages: Vec<&'static str>,
+	weight_factors: WeightFactors,
+	word_memory_parameters: WordMemoryParameters,
 }
 
 #[tauri::command]
-fn set_success_weight_factor(state: tauri::State<AppState>, factor: f64) {
-	state.options.blocking_lock().weight_factors.succeeded = factor;
+fn get_options(state: tauri::State<AppState>) -> FrontendOptions {
+	let options = state.options.blocking_lock();
+
+	FrontendOptions { 
+		current_language: LANGUAGES[options.language_index].name, 
+		saved_languages: options.saved_languages.iter().map(|&i| LANGUAGES[i].name).collect(), 
+		weight_factors: options.weight_factors, 
+		word_memory_parameters: options.word_memory_parameters,
+	}
 }
+
 #[tauri::command]
-fn set_failure_weight_factor(state: tauri::State<AppState>, factor: f64) {
-	state.options.blocking_lock().weight_factors.failed = factor;
+fn set_weight_factors(state: tauri::State<AppState>, factors: WeightFactors) {
+	state.options.blocking_lock().weight_factors = factors;
+}
+
+#[tauri::command]
+fn set_word_memory_parameters(state: tauri::State<AppState>, parameters: WordMemoryParameters) {
+	state.options.blocking_lock().word_memory_parameters = parameters;
 }
 
 //----------------------------------------------------------------
 
 #[tauri::command]
 fn get_language_list() -> Vec<&'static str> {
-	source_data::LANGUAGES.iter().map(|language| language.name).collect()
-}
-
-#[tauri::command]
-fn get_saved_language_list(state: tauri::State<AppState>) -> Vec<&str> {
-	state.options.blocking_lock().saved_languages.iter().map(|&i| source_data::LANGUAGES[i].name).collect()
-}
-
-#[tauri::command]
-fn get_current_language(state: tauri::State<AppState>) -> &str {
-	source_data::LANGUAGES[state.options.blocking_lock().language_index].name
+	LANGUAGES.iter().map(|language| language.name).collect()
 }
 
 #[tauri::command]
@@ -114,11 +124,11 @@ async fn set_current_language(app: tauri::AppHandle, language_name: String) {
 
 	let mut options = state.options.lock().await;
 
-	if language_name == source_data::LANGUAGES[options.language_index].name {
+	if language_name == LANGUAGES[options.language_index].name {
 		return;
 	}
 	
-	if let Some(&language_index) = options.saved_languages.iter().find(|&&i| source_data::LANGUAGES[i].name == language_name) {
+	if let Some(&language_index) = options.saved_languages.iter().find(|&&i| LANGUAGES[i].name == language_name) {
 		let mut learning_data = state.learning_data.lock().await;
 		learning_data.save_words_to_file(options.language_index);
 		options.language_index = language_index;
@@ -131,16 +141,16 @@ async fn set_current_language(app: tauri::AppHandle, language_name: String) {
 //----------------------------------------------------------------
 
 #[tauri::command]
-async fn download_language_data(app: tauri::AppHandle, window: tauri::Window, info: source_data::SourceDataInfo) {
+async fn download_language_data(app: tauri::AppHandle, window: tauri::Window, info: SourceDataInfo) {
 	let source_data = SourceData::download(info, |status| {
 		window.emit("download_status", &status).unwrap();
 	}).await;
 
-	window.emit("download_status", &source_data::SourceDataDownloadStatus::Loading).unwrap();
+	window.emit("download_status", &SourceDataDownloadStatus::Loading).unwrap();
 
 	add_new_language_data(app, source_data).await;
 
-	window.emit("download_status", &source_data::SourceDataDownloadStatus::Finished).unwrap();
+	window.emit("download_status", &SourceDataDownloadStatus::Finished).unwrap();
 }
 
 async fn add_new_language_data(app: tauri::AppHandle, source_data: SourceData) {
@@ -155,7 +165,7 @@ async fn add_new_language_data(app: tauri::AppHandle, source_data: SourceData) {
 			options.saved_languages.insert(i, source_data.language_index);
 		}
 		
-		*learning_data = LearningData::load_from_source_data(&source_data);
+		*learning_data = LearningData::load_from_source_data(&source_data, &options);
 		// Save sentences immediately.
 		// Sentences are saved only when necessary while words and their weights are saved every time the app closes.
 		learning_data.save_sentences_to_file(options.language_index);
@@ -178,7 +188,7 @@ struct WordData {
 #[tauri::command]
 fn get_word_data(state: tauri::State<AppState>) -> WordData {
 	let learning_data = state.learning_data.blocking_lock();
-	let words = &learning_data.words().0;
+	let words = &learning_data.words().words;
 
 	WordData {
 		words: words.clone(),
@@ -196,16 +206,14 @@ pub fn run() {
 		.invoke_handler(tauri::generate_handler![
 			download_language_data,
 			finish_task,
-			get_current_language,
 			get_language_list,
-			get_saved_language_list,
+			get_options,
 			get_word_data,
-			get_weight_factors,
 			load_sentence_audio,
 			next_task, 
 			set_current_language,
-			set_failure_weight_factor,
-			set_success_weight_factor,
+			set_weight_factors,
+			set_word_memory_parameters,
 		])
 		.on_window_event(handle_window_event)
 		.run(tauri::generate_context!())

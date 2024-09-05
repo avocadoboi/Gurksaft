@@ -7,7 +7,7 @@
 		<h3>Language</h3>
 	
 		<app-dropdown #languageDropdown placeholder="Choose language" (selectionChange)="changeLanguage($event)">
-			<app-dropdown-option *ngFor="let language of savedLanguages" [value]="language">
+			<app-dropdown-option *ngFor="let language of options.saved_languages" [value]="language">
 				{{language}}
 			</app-dropdown-option>
 		</app-dropdown>
@@ -18,11 +18,49 @@
 	<hr>
 	<div>
 		<h3>Success weight factor</h3>
-		<input id="success-weight-factor-input" type="number" inputmode="numeric" [(ngModel)]="weightFactors.succeeded" (change)="setSuccessWeight()"/>
+		<input type="number" 
+			[(ngModel)]="options.weight_factors.succeeded" (change)="saveWeightFactors()"/>
 	</div>
 	<div>
 		<h3>Failure weight factor</h3>
-		<input id="failure-weight-factor-input" type="number" [(ngModel)]="weightFactors.failed" (change)="setFailureWeight()">
+		<input type="number" 
+			[(ngModel)]="options.weight_factors.failed" (change)="saveWeightFactors()">
+	</div>
+	<hr>
+	<h2>Word memory</h2>
+	<div>
+		<h3>Easy threshold</h3>
+		<input type="number"
+			[(ngModel)]="options.word_memory_parameters.easy_threshold" 
+			(change)="saveWordMemoryParameters()">
+	</div>
+	<div>
+		<h3>Learned threshold</h3>
+		<input type="number"
+			[(ngModel)]="options.word_memory_parameters.learned_threshold" 
+			(change)="saveWordMemoryParameters()">
+	</div>
+	<div>
+		<h3>Change rate range</h3>
+		<input type="number"
+			[(ngModel)]="options.word_memory_parameters.change_rate_range.min" 
+			(change)="saveWordMemoryParameters()">
+		-
+		<input type="number"
+			[(ngModel)]="options.word_memory_parameters.change_rate_range.max" 
+			(change)="saveWordMemoryParameters()">
+	</div>
+	<div>
+		<h3>Change rate half time</h3>
+		<input type="number"
+			[(ngModel)]="options.word_memory_parameters.change_rate_half_time" 
+			(change)="saveWordMemoryParameters()">
+	</div>
+	<div>
+		<h3>Initial memory</h3>
+		<input type="number"
+			[(ngModel)]="options.word_memory_parameters.initial_memory"
+			(change)="saveWordMemoryParameters()">
 	</div>
 	<hr>
 	<div>

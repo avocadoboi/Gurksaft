@@ -6,62 +6,74 @@ import { RouterModule } from '@angular/router';
 import { invoke } from '@tauri-apps/api';
 import { appWindow } from '@tauri-apps/api/window';
 
-import { RippleDirective } from '../ripple.directive';
 import { DropdownComponent } from '../dropdown/dropdown.component';
 import { DropdownOptionComponent } from '../dropdown-option/dropdown-option.component';
+import { NumberInputDirective } from '../number-input.directive';
+import { RippleDirective } from '../ripple.directive';
 
 //----------------------------------------------------------------
 
-type WeightFactors = {
-	succeeded: number;
-	failed: number;
+class Range {
+	min = 0;
+	max = 1;
 };
+
+class WordMemoryParameters {
+	easy_threshold = 0;
+	learned_threshold = 0;
+	change_rate_range = new Range();
+	change_rate_half_time = 0;
+	initial_memory = 0;
+}
+
+class WeightFactors {
+	succeeded = 0;
+	failed = 0;
+}
+
+class Options {
+	current_language = "";
+	saved_languages: string[] = [];
+	weight_factors = new WeightFactors();
+	word_memory_parameters = new WordMemoryParameters();
+}
 
 @Component({
 	selector: 'app-options',
 	standalone: true,
 	imports: [CommonModule, FormsModule, RouterModule, 
-		DropdownComponent, DropdownOptionComponent, RippleDirective],
+		DropdownComponent, DropdownOptionComponent, NumberInputDirective, RippleDirective],
 	templateUrl: './options.component.html',
 	styleUrls: ['./options.component.scss']
 })
 export class OptionsComponent implements AfterViewInit {
 	@ViewChild('languageDropdown') 
 	private languageDropdown!: DropdownComponent;
-	
-	savedLanguages: string[] = [];
-	weightFactors: WeightFactors = {
-		succeeded: 1,
-		failed: 1
-	};
+	options = new Options();
 
 	constructor(private changeDetector: ChangeDetectorRef) {
 		appWindow.setTitle('Gurksaft - options');
-
-		invoke<WeightFactors>("get_weight_factors").then(weight_factors => this.weightFactors = weight_factors);
 	}
 	
 	ngAfterViewInit(): void {
-		invoke<string[]>('get_saved_language_list').then(languages => {
-			this.savedLanguages = languages;
+		// console
+		invoke<Options>("get_options").then(options => {
+			// console.log("Got em");
+			this.options = options;
 			this.changeDetector.detectChanges();
-	
-			invoke<string>('get_current_language').then(language => {
-				this.languageDropdown.select(language);
-				this.changeDetector.detectChanges();
-			});
+			this.languageDropdown.select(options.current_language);
+			this.changeDetector.detectChanges();
 		});
 	}
 
 	changeLanguage(option: DropdownOptionComponent): void {
-		invoke("set_current_language", { languageName: option.value });
+		// invoke("set_current_language", { languageName: option.value });
 	}
 
-	setSuccessWeight(): void {
-		invoke("set_success_weight_factor", { factor: this.weightFactors.succeeded });
+	saveWeightFactors(): void {
+		// invoke("set_weight_factors", { factors: this.options.weightFactors });
 	}
-	setFailureWeight(): void {
-		invoke("set_failure_weight_factor", { factor: this.weightFactors.failed });
+	saveWordMemoryParameters(): void {
+		// invoke("set_word_memory_parameters", { parameters: this.options.wordMemoryParameters });
 	}
-
 }

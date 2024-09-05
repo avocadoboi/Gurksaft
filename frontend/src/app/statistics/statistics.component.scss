@@ -5,7 +5,13 @@
 	padding: 1em 2em;
 	max-width: 50em;
 }
-
+.content {
+	gap: 1.5em;
+}
+.content > div {
+	display: flex;
+	flex-direction: column;
+}
 p {
 	color: oklch(var(--on-surface-variant));
 	margin-bottom: 1em;
